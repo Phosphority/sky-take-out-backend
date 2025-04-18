@@ -4,6 +4,7 @@ import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -95,12 +96,12 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
-        @GetMapping("/{id}")
+    @GetMapping("/{id}")
     @ApiOperation("根据ID查询员工")
     public Result<Employee> findById(@PathVariable Long id) {
         log.info("员工ID:{}", id);
         Employee employee = employeeService.findById(id);
-        return Result.success();
+        return Result.success(employee);
     }
 
     @PutMapping
@@ -112,12 +113,23 @@ public class EmployeeController {
     }
 
     @PostMapping("/status/{status}")
-    public Result startOrStop(@PathVariable("status") Integer status,long id) {
+    @ApiOperation("修改员工的状态")
+    public Result startOrStop(@PathVariable("status") Integer status, long id) {
         log.info("修改员工状态:{},{}", status, id);
-        employeeService.startOrStop(status,id);
+        employeeService.startOrStop(status, id);
         return Result.success();
     }
 
+    @PutMapping("/editPassword")
+    @ApiOperation("修改密码")
+    public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
+        log.info("修改密码员工id:{},新密码:{},旧密码:{}",passwordEditDTO.getEmpId(),passwordEditDTO.getOldPassword(),passwordEditDTO.getNewPassword());
+        Employee employee = employeeService.findById(passwordEditDTO.getEmpId());
+        if(employee.getPassword().equals(DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes()))){
+            employeeService.editPassword(passwordEditDTO.getNewPassword(),passwordEditDTO.getEmpId());
+        }
+        return Result.success();
+    }
 
 }
 

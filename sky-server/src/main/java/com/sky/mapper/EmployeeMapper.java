@@ -5,6 +5,7 @@ import com.sky.entity.Employee;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据用户名查询员工
+     *
      * @param username
      * @return
      */
@@ -25,11 +27,9 @@ public interface EmployeeMapper {
 
     Page<Employee> page(String name);
 
-        @Select("select * from employee where id = #{id}")
+    @Select("select * from employee where id = #{id}")
     Employee findById(Long id);
 
-    @Update("update employee set ")
     void update(Employee employee);
 
-    void startOrStop(Employee employee);
 }

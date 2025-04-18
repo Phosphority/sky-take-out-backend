@@ -24,4 +24,6 @@ public interface EmployeeService {
     void update(EmployeeDTO employeeDTO);
 
     void startOrStop(Integer status, long id);
+
+    void editPassword(String passwordEditDTO, Long empId);
 }
