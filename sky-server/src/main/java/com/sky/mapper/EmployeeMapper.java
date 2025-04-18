@@ -24,4 +24,12 @@ public interface EmployeeMapper {
     void add(Employee employee);
 
     Page<Employee> page(String name);
+
+        @Select("select * from employee where id = #{id}")
+    Employee findById(Long id);
+
+    @Update("update employee set ")
+    void update(Employee employee);
+
+    void startOrStop(Employee employee);
 }
