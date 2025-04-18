@@ -102,7 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void update(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
+        Employee employee = Employee.builder().build();
         BeanUtils.copyProperties(employeeDTO, employee);
 
         employee.setUpdateTime(LocalDateTime.now());
@@ -127,7 +127,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void editPassword(String newPassword, Long empId) {
         Employee employee = Employee.builder()
                 .id(empId)
-                .password(newPassword)
+                .password(DigestUtils.md5DigestAsHex(newPassword.getBytes()))
                 .updateTime(LocalDateTime.now())
                 .updateUser(BaseContext.getCurrentId())
                 .build();

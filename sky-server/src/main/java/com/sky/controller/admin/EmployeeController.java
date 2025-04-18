@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
@@ -25,10 +26,10 @@ import java.util.Map;
 /**
  * 员工管理
  */
-@RestController
-@RequestMapping("/admin/employee")
 @Slf4j
+@RestController
 @Api(tags = "员工接口")
+@RequestMapping("/admin/employee")
 public class EmployeeController {
 
     @Autowired
@@ -75,6 +76,7 @@ public class EmployeeController {
     @ApiOperation("登出")
     @PostMapping("/logout")
     public Result<String> logout() {
+        BaseContext.setCurrentId(null);
         return Result.success();
     }
 
@@ -101,6 +103,7 @@ public class EmployeeController {
     public Result<Employee> findById(@PathVariable Long id) {
         log.info("员工ID:{}", id);
         Employee employee = employeeService.findById(id);
+        employee.setPassword("********");
         return Result.success(employee);
     }
 
@@ -121,7 +124,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/editPassword")
-    @ApiOperation("修改密码")
+    @ApiOperation("修改员工密码")
     public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
         log.info("修改密码员工id:{},新密码:{},旧密码:{}",passwordEditDTO.getEmpId(),passwordEditDTO.getOldPassword(),passwordEditDTO.getNewPassword());
         Employee employee = employeeService.findById(passwordEditDTO.getEmpId());
