@@ -17,6 +17,11 @@ public interface EmployeeService {
 
     void add(EmployeeDTO employeeDTO);
 
-
     PageResult page(EmployeePageQueryDTO employeePageQueryDTO);
+    
+    Employee findById(Long id);
+
+    void update(EmployeeDTO employeeDTO);
+
+    void startOrStop(Integer status, long id);
 }
