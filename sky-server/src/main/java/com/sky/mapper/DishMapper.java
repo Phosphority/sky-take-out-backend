@@ -7,6 +7,7 @@ import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -28,4 +29,8 @@ public interface DishMapper {
     boolean updateDish(Dish dish);
 
     DishVO findById(Long id);
+
+    @AutoFill(OperationType.UPDATE)
+    @Update("update dish set status = #{status},update_time = #{updateTime},update_user = #{updateUser} where id = #{id}")
+    void updateStatus(Dish dish);
 }

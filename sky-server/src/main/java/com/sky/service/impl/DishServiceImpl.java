@@ -8,7 +8,6 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.exception.DeletionNotAllowedException;
-import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
@@ -101,6 +100,14 @@ public class DishServiceImpl implements DishService {
             dishVO.setFlavors(dishFlavorMapper.findFlavorByDishId(dishId));
         }
         return dishVO;
+    }
+
+    @Override
+    public void updateStatus(Integer status, long id) {
+        Dish dish = Dish.builder().build();
+        dish.setStatus(status);
+        dish.setId(id);
+        dishMapper.updateStatus(dish);
     }
 
 }
