@@ -20,5 +20,5 @@ public interface DishMapper {
 
     Page<DishVO> page(Dish employee);
 
-    void deleteBatch(List<Integer> dishIds);
+    void deleteBatch(List<Long> dishIds);
 }

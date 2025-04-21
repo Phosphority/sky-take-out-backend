@@ -23,5 +23,6 @@
         <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
             #{dishId}
         </foreach>
+        and status = 0
     </delete>
 </mapper>
