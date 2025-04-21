@@ -3,9 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sky.mapper.DishMapper">
+    <select id="page" parameterType="Dish" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as categoryName from dish as d left join category as c on d.category_id = c.id
+        <where>
+            <if test="categoryId != null">category_id = #{categoryId}</if>
+            <if test="name != null">name like concat('%',#{name},'%')</if>
+            <if test="status != null">status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
 <!--                      NOTICE 将插入后生成的主键id返回，并且将值赋值给id                             -->
     <insert id="addDish" useGeneratedKeys="true" keyProperty="id">
         insert into dish(name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values(#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
+
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
+            #{dishId}
+        </foreach>
+    </delete>
 </mapper>

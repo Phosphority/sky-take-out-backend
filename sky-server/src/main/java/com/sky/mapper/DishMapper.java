@@ -1,12 +1,14 @@
 package com.sky.mapper;
 
-import com.alibaba.druid.filter.AutoLoad;
+import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
-import org.apache.ibatis.annotations.Insert;
+import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface DishMapper {
@@ -15,4 +17,8 @@ public interface DishMapper {
 
     @AutoFill(OperationType.INSERT)
     void addDish(Dish dish);
+
+    Page<DishVO> page(Dish employee);
+
+    void deleteBatch(List<Integer> dishIds);
 }
