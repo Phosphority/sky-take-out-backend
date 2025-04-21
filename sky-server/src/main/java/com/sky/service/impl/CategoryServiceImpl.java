@@ -61,7 +61,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .status(status)
                 .id(id)
                 .build();
-
         categoryMapper.update(category);
     }
 

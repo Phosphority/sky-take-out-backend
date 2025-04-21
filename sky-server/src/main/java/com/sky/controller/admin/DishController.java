@@ -72,6 +72,8 @@ public class DishController {
         dishService.updateStatus(status,id);
         return Result.success();
     }
+
+
 }
 
 

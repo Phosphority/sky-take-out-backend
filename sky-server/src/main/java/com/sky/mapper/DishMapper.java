@@ -19,7 +19,7 @@ public interface DishMapper {
     @AutoFill(OperationType.INSERT)
     void addDish(Dish dish);
 
-    Page<DishVO> page(Dish employee);
+    Page<DishVO> page(Dish dish);
 
     boolean deleteBatch(List<Long> dishIds);
 
