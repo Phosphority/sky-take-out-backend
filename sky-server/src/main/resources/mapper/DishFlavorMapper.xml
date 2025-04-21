@@ -17,15 +17,10 @@
         </foreach>
     </delete>
 
-    <update id="updateDishFlavor">
-        update dish_flavor
-            <if test="flavors != null">
-            <set>
-                <foreach collection="flavors" index="index" separator=",">
-                    name = #{flavors[index].name},value = #{flavors[index].value}
-                </foreach>
-            </set>
-            </if>
-        where dish_id = #{dishId}
-    </update>
+    <insert id="insertDishFlavor">
+        insert into dish_flavor(dish_id,name,value) values
+        <foreach collection="flavors" item="flavor" separator=",">
+            (#{dishId},#{flavor.name},#{flavor.value})
+        </foreach>
+    </insert>
 </mapper>

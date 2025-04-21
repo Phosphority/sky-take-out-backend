@@ -14,7 +14,7 @@
     </select>
 
     <select id="findById" resultType="com.sky.vo.DishVO">
-        select d.*,c.name as categoryName from dish as d left join category as c on d.category_id = c.id where d.id = #{id}
+        select * from dish where id = #{id}
     </select>
 
 <!--                      NOTICE 将插入后生成的主键id返回，并且将值赋值给id                             -->
@@ -23,11 +23,12 @@
         values(#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
 
-    <select id="findDishStatus" resultType="boolean">
+    <select id="findDishStatus" resultType="integer">
         select count(*) from dish where id in
         <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
             #{dishId}
         </foreach>
+        and status = 1
     </select>
 
     <delete id="deleteBatch">
@@ -38,7 +39,7 @@
     </delete>
 
     <update id="updateDish" parameterType="Dish">
-        update dish d left join category c on d.category_id = c.id
+        update dish
         <set>
             <if test="categoryId != null">category_id = #{categoryId},</if>
             <if test="description != null">description = #{description},</if>

@@ -11,5 +11,5 @@ public interface SetmealMapper {
     @Select("select count(*) from setmeal where category_id = #{CategoryId}")
     Integer findByCategoryId(long CategoryId);
 
-    Boolean findDishByDishId(List<Long> dishIds);
+    Integer findDishByDishId(List<Long> dishIds);
 }
