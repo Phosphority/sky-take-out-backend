@@ -20,5 +20,12 @@ public interface DishMapper {
 
     Page<DishVO> page(Dish employee);
 
-    void deleteBatch(List<Long> dishIds);
+    boolean deleteBatch(List<Long> dishIds);
+
+    boolean findDishStatus(List<Long> dishIds);
+
+    @AutoFill(OperationType.UPDATE)
+    boolean updateDish(Dish dish);
+
+    DishVO findById(Long id);
 }

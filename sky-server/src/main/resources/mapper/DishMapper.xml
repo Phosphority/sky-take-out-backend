@@ -12,17 +12,53 @@
         </where>
         order by create_time desc
     </select>
+
+    <select id="findById" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as categoryName from dish as d left join category as c on d.category_id = c.id where d.id = #{id}
+    </select>
+
 <!--                      NOTICE 将插入后生成的主键id返回，并且将值赋值给id                             -->
     <insert id="addDish" useGeneratedKeys="true" keyProperty="id">
         insert into dish(name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values(#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
 
+    <select id="findDishStatus" resultType="boolean">
+        select count(*) from dish where id in
+        <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
+            #{dishId}
+        </foreach>
+    </select>
+
     <delete id="deleteBatch">
         delete from dish where id in
         <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
             #{dishId}
         </foreach>
-        and status = 0
     </delete>
+
+    <update id="updateDish" parameterType="Dish">
+        update dish d left join category c on d.category_id = c.id
+        <set>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time=#{updateTime},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+        </set>
+        where id  = #{id}
+    </update>
 </mapper>
+
+
+
+
+
+
+
+
+
+

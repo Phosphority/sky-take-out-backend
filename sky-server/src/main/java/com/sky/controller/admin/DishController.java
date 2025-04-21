@@ -6,6 +6,7 @@ import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
@@ -46,6 +47,22 @@ public class DishController {
     public Result deleteBatch(@RequestParam List<Long> dishIds) {
         log.info("要删除的菜品的id:{}", dishIds);
         dishService.deleteBatch(dishIds);
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据Id查询菜品")
+    public Result<DishVO> findById(@RequestParam Long id) {
+        log.info("菜品查询id:{}", id);
+        DishVO dishVO = dishService.findById(id);
+        return Result.success(dishVO);
+    }
+
+    @PutMapping
+    @ApiOperation("修改菜品")
+    public Result updateDish(@RequestBody DishDTO dishDTO) {
+        log.info("修改菜品信息{}",dishDTO);
+        dishService.updateDish(dishDTO);
         return Result.success();
     }
 }
