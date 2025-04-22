@@ -113,6 +113,11 @@ public class DishServiceImpl implements DishService {
         dishMapper.updateStatus(dish);
     }
 
+    @Override
+    public List<DishVO> findByCategoryId(long categoryId) {
+        return dishMapper.findByCategoryId(categoryId);
+    }
+
 }
 
 

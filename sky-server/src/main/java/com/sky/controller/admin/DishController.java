@@ -58,6 +58,14 @@ public class DishController {
         return Result.success(dishVO);
     }
 
+    @GetMapping("/list")
+    @ApiOperation("根据分类Id查询菜品")
+    public Result<List<DishVO>> findByCategoryId(@RequestParam long categoryId) {
+        log.info("分类Id:{}", categoryId);
+        List<DishVO> dishVO = dishService.findByCategoryId(categoryId);
+        return Result.success(dishVO);
+    }
+
     @PutMapping
     @ApiOperation("修改菜品")
     public Result updateDishWithFlavor(@RequestBody DishDTO dishDTO) {

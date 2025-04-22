@@ -19,4 +19,6 @@ public interface DishService {
     DishVO findById(Long id);
 
     void updateStatus(Integer status, long id);
+
+    List<DishVO> findByCategoryId(long categoryId);
 }
