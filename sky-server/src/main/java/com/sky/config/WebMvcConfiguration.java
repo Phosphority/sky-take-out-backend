@@ -4,8 +4,12 @@ import com.sky.interceptor.JwtTokenAdminInterceptor;
 import com.sky.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -77,6 +81,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
+    // 配置JsonObject解析器，将返回的Json类型的数据风格规范化和统一化
     @Override
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -85,4 +90,24 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
         converters.add(0,converter);
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        log.info("开始创建redisTemplate，{}",redisConnectionFactory);
+        RedisTemplate redisTemplate = new RedisTemplate();
+        // NOTICE 设置redis的序列化器,使用StringRedisSerializer在redis中是普通字符串类型，
+        // 而使用Jackson2JsonRedisSerializer在redis中是Json格式的字符串
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        return redisTemplate;
+    }
 }
+
+
+
+
+
+
+
