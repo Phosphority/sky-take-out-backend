@@ -24,11 +24,10 @@
     </insert>
 
     <select id="findDishStatus" resultType="integer">
-        select count(*) from dish where id in
+        select count(*) from dish where status = 1 and id in
         <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
             #{dishId}
         </foreach>
-        and status = 1
     </select>
 
     <delete id="deleteBatch">
