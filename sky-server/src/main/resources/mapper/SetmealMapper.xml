@@ -40,7 +40,8 @@
         and status = 1
     </select>
     <select id="findById" resultMap="findById">
-        select s.*,c.name as categoryName,sd.id,sd.name
+        select s.*,c.name as categoryName,
+               sd.id as setmeal_dish_id,sd.name as dish_name,sd.setmeal_id,sd.dish_id as dish_id,sd.price as dish_price,sd.copies
         from setmeal s left join category c on s.category_id = c.id left join setmeal_dish sd on s.id = sd.setmeal_id where s.id = #{id}
     </select>
     <resultMap id="findById" type="com.sky.vo.SetmealVO">
@@ -52,13 +53,13 @@
         <result column="description" property="description"/>
         <result column="image" property="image"/>
         <result column="update_time" property="updateTime"/>
-        <association property="categoryName" column="categoryName" javaType="string"/>
+        <association column="categoryName" property="categoryName" javaType="string"/>
         <collection property="setmealDishes" ofType="SetmealDish" javaType="list">
-            <id column="id" property="id"/>
-            <result column="name" property="name"/>
+            <id column="setmeal_dish_id" property="id"/>
+            <result column="dish_name" property="name"/>
             <result column="setmeal_id" property="setmealId"/>
             <result column="dish_id" property="dishId"/>
-            <result column="price" property="price"/>
+            <result column="dish_price" property="price"/>
             <result column="copies" property="copies"/>
         </collection>
     </resultMap>
