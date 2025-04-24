@@ -33,6 +33,9 @@ public class adminShopController {
     @ApiOperation("获取营业状态")
     public Result<Integer> getStatus() {
         Integer shopStatus = redisTemplate.opsForValue().get(ShopStatusConstant.SHOP_STATUS);
+        if(shopStatus == null){
+            shopStatus = 0;
+        }
         log.info("店铺当前的营业状态为:{}", shopStatus == 1 ? ShopStatusConstant.STATUS_OPEN :ShopStatusConstant.STATUS_CLOSE);
         return Result.success(shopStatus);
     }

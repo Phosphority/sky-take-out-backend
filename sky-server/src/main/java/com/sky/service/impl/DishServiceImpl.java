@@ -71,7 +71,7 @@ public class DishServiceImpl implements DishService {
         if (setmealMapper.findDishByDishId(dishIds) > 0) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
             // 2.判断菜品状态是否是在售状态
-        } else if (dishMapper.findDishStatus(dishIds) > 0) {
+        } else if (dishMapper.findOnSaleDishStatus(dishIds) > 0) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             // 3.判断是否删除成功
         } else if (dishMapper.deleteBatch(dishIds)) {

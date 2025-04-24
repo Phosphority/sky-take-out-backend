@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface SetmealDishMapper {
-    @AutoFill(OperationType.INSERT)
+
     void addSetmealDish(List<SetmealDish> setmealDishes);
 
     boolean deleteBatch(List<Long> setmealIds);

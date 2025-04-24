@@ -17,13 +17,13 @@
         select * from dish where id = #{id}
     </select>
 
-<!--                      NOTICE 将插入后生成的主键id返回，并且将值赋值给id                             -->
-    <insert id="addDish" useGeneratedKeys="true" keyProperty="id">
+<!--                      NOTICE 将插入后生成的主键id返回，并使用反射将值赋值给Dish对象的id属性，这里keyProperty的id也就是Dish中的id属性                             -->
+    <insert id="addDish" parameterType="Dish" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into dish(name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values(#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
 
-    <select id="findDishStatus" resultType="integer">
+    <select id="findOnSaleDishStatus" resultType="integer">
         select count(*) from dish where status = 1 and id in
         <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
             #{dishId}

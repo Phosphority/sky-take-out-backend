@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -19,16 +20,15 @@ public interface SetmealMapper {
     Integer findDishByDishId(List<Long> dishIds);
 
     @AutoFill(OperationType.INSERT)
-    Long addSetmeal(Setmeal setmeal);
+    void addSetmeal(Setmeal setmeal);
 
-    Page<Setmeal> page(Setmeal setmeal);
+    Page<SetmealVO> page(Setmeal setmeal);
 
     Integer findBatchStatus(List<Long> ids);
 
     boolean deleteBatch(List<Long>  ids);
 
-    @Select("select * from setmeal where id = #{id}")
-    Setmeal findById(Long id);
+    SetmealVO findById(long id);
 
     @AutoFill(OperationType.UPDATE)
     @Update("update setmeal " +

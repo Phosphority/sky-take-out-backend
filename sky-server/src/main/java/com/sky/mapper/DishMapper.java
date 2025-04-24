@@ -23,7 +23,7 @@ public interface DishMapper {
 
     boolean deleteBatch(List<Long> dishIds);
 
-    Integer findDishStatus(List<Long> dishIds);
+    Integer findOnSaleDishStatus(List<Long> dishIds);
 
     @AutoFill(OperationType.UPDATE)
     boolean updateDish(Dish dish);

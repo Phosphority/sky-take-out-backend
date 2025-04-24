@@ -13,8 +13,10 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class SetmealServiceImpl implements SetmealService {
     @Resource
     private DishMapper dishMapper;
 
+    @Transactional
     @Override
     public void addSetmeal(SetmealDTO setmealDTO) {
         Setmeal setmeal = Setmeal.builder()
@@ -41,7 +44,10 @@ public class SetmealServiceImpl implements SetmealService {
                 .categoryId(setmealDTO.getCategoryId())
                 .build();
         // TODO 这里的逻辑还有问题，插入完setmeal之后需要返回插入成功的主键id作为setmeal_dish的setmeal_id
-        Long setmealId = setmealMapper.addSetmeal(setmeal);
+        // NOTICE 这里返回的意思不是直接从数据库中返回数据，然后直接接收，而是mybatis将数据利用反射set到entity(Setmeal)的对象中
+        setmealMapper.addSetmeal(setmeal);
+        // 插入之后再从setmeal中获取setmealId
+        long setmealId = setmeal.getId();
         // 判断setmealDishes是否有值
         if (setmealDTO.getSetmealDishes() != null && !setmealDTO.getSetmealDishes().isEmpty()) {
             // 将setmealId插入所有的SetmealDish中
@@ -60,10 +66,11 @@ public class SetmealServiceImpl implements SetmealService {
                 .status(setmealPageQueryDTO.getStatus())
                 .categoryId(setmealPageQueryDTO.getCategoryId())
                 .build();
-        Page<Setmeal> setmealPage = setmealMapper.page(setmeal);
+        Page<SetmealVO> setmealPage = setmealMapper.page(setmeal);
         return new PageResult(setmealPage.getTotal(), setmealPage.getResult());
     }
 
+    @Transactional
     @Override
     public void deleteBatch(List<Long> ids) {
         if (setmealMapper.findBatchStatus(ids) > 0) {
@@ -74,11 +81,12 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     @Override
-    public Setmeal findById(Long id) {
+    public SetmealVO findById(long id) {
         return setmealMapper.findById(id);
     }
 
 
+    @Transactional
     @Override
     public void updateSetmeal(SetmealDTO setmealDTO) {
         Setmeal setmeal = Setmeal.builder()
@@ -98,17 +106,22 @@ public class SetmealServiceImpl implements SetmealService {
         }
     }
 
+    @Transactional
     @Override
     public void updateSetmealStatus(Integer status, long id) {
         Setmeal setmeal = Setmeal.builder()
                 .id(id)
                 .status(status)
                 .build();
-        // 从菜品套餐表中查出dishIds
+        // 1.从套餐菜品表中查出dishIds
         List<Long> dishIds = setmealDishMapper.findDishIdBySetmealId(id);
-        //
-        if (dishMapper.findDishStatus(dishIds) > 0) {
-            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+        // 2.从菜品表中查出在售商品的数量
+        Integer onSaleDishCount = dishMapper.findOnSaleDishStatus(dishIds);
+        // NOTICE 3.如果在售商品的数量和套餐菜品中的数量不一致，那就说明套餐菜品中既有在售中的菜品，又有未售中的菜品
+        boolean dishStatus = dishIds.size() == onSaleDishCount;
+        // 起售与停售分开判断:1为起售，0为停售
+        if (status == 1 && !dishStatus) {
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ENABLE_FAILED);
         } else {
             setmealMapper.updateSetmealStatus(setmeal);
         }
