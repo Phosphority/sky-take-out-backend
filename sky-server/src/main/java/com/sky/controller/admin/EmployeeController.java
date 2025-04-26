@@ -16,7 +16,6 @@ import com.sky.vo.EmployeeLoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,7 +56,8 @@ public class EmployeeController {
         String token = JwtUtil.createJWT(
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),
-                claims);
+                claims
+        );
 
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
@@ -127,10 +127,10 @@ public class EmployeeController {
     @PutMapping("/editPassword")
     @ApiOperation("修改员工密码")
     public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
-        log.info("修改密码员工id:{},新密码:{},旧密码:{}",passwordEditDTO.getEmpId(),passwordEditDTO.getOldPassword(),passwordEditDTO.getNewPassword());
+        log.info("修改密码员工id:{},新密码:{},旧密码:{}", passwordEditDTO.getEmpId(), passwordEditDTO.getOldPassword(), passwordEditDTO.getNewPassword());
         Employee employee = employeeService.findById(passwordEditDTO.getEmpId());
-        if(employee.getPassword().equals(DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes()))){
-            employeeService.editPassword(passwordEditDTO.getNewPassword(),passwordEditDTO.getEmpId());
+        if (employee.getPassword().equals(DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes()))) {
+            employeeService.editPassword(passwordEditDTO.getNewPassword(), passwordEditDTO.getEmpId());
         }
         return Result.success();
     }
