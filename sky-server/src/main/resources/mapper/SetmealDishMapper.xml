@@ -15,6 +15,9 @@
             #{setmealId}
         </foreach>
     </delete>
+    <select id="findDishesBySetmealId" resultType="com.sky.vo.DishItemVO">
+        select d.description,d.image,sd.name,sd.copies from setmeal_dish sd left join dish d on sd.dish_id = d.id where setmeal_id = #{id}
+    </select>
 </mapper>
 
 

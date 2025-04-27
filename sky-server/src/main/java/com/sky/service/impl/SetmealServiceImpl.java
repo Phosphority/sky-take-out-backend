@@ -13,6 +13,7 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -125,6 +126,16 @@ public class SetmealServiceImpl implements SetmealService {
         } else {
             setmealMapper.updateSetmealStatus(setmeal);
         }
+    }
+
+    @Override
+    public List<Setmeal> findByCategoryId(long categoryId) {
+        return setmealMapper.findByCategoryId(categoryId);
+    }
+
+    @Override
+    public List<DishItemVO> findDishesBySetmealId(long id) {
+        return setmealDishMapper.findDishesBySetmealId(id);
     }
 }
 

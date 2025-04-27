@@ -91,7 +91,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findById(Long id) {
-        return employeeMapper.findById(id);
+        Employee employee = employeeMapper.findById(id);
+        employee.setPassword("********");
+        return employee;
     }
 
     @Override

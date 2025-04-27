@@ -20,7 +20,6 @@ public interface CategoryMapper {
     @AutoFill(OperationType.UPDATE)
     void update(Category category);
 
-    @Select("select * from category where type = #{type}")
     List<Category> findListByType(Integer type);
 
     Page<Category> page(@Param("name") String name,@Param("type") Integer type);

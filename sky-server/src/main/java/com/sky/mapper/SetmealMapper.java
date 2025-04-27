@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper
 public interface SetmealMapper {
     @Select("select count(*) from setmeal where category_id = #{CategoryId}")
-    Integer findByCategoryId(long CategoryId);
+    Integer countByCategoryId(long CategoryId);
 
     Integer findDishByDishId(List<Long> dishIds);
 
@@ -40,6 +40,9 @@ public interface SetmealMapper {
     @AutoFill(OperationType.UPDATE)
     @Update("update setmeal set status = #{status} where id = #{id}")
     void updateSetmealStatus(Setmeal setmeal);
+
+    @Select("select * from setmeal where category_id = #{categoryId}")
+    List<Setmeal> findByCategoryId(long categoryId);
 }
 
 

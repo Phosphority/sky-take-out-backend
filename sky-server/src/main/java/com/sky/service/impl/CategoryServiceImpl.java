@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
         }
 
-        count = setmealMapper.findByCategoryId(id);
+        count = setmealMapper.countByCategoryId(id);
         if( count <= 0){
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
         }

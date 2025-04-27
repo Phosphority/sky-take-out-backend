@@ -92,8 +92,6 @@ public class EmployeeController {
     @GetMapping("/page")
     @ApiOperation("员工分页查询")
     public Result<PageResult> page(@ModelAttribute EmployeePageQueryDTO employeePageQueryDTO) {
-        System.out.println(employeePageQueryDTO.getPage());
-        System.out.println(employeePageQueryDTO.getPageSize());
         log.info("employeePageQueryDTO:{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.page(employeePageQueryDTO);
         return Result.success(pageResult);
@@ -104,7 +102,6 @@ public class EmployeeController {
     public Result<Employee> findById(@PathVariable Long id) {
         log.info("员工ID:{}", id);
         Employee employee = employeeService.findById(id);
-        employee.setPassword("********");
         return Result.success(employee);
     }
 
