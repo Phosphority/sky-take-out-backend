@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -66,7 +68,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> findListByType(Integer type) {
-        return categoryMapper.findListByType(type);
+        Set<String> keySet = BaseContext.getCurrentId().keySet();
+        String valueName = null;
+        for (String key : keySet) {
+            valueName = key;
+        }
+        if (valueName != null && valueName.equals(JwtClaimsConstant.USER_ID)) {
+            // 如果是用户，则只查询在售状态的菜品
+            return categoryMapper.findListByType(type, 1);
+        } else {
+            // 如果是管理员，则status为null查询所有的菜品
+            return categoryMapper.findListByType(type,null);
+        }
     }
 
     @Override

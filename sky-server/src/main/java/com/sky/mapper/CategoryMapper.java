@@ -20,7 +20,7 @@ public interface CategoryMapper {
     @AutoFill(OperationType.UPDATE)
     void update(Category category);
 
-    List<Category> findListByType(Integer type);
+    List<Category> findListByType(Integer type, Integer status);
 
     Page<Category> page(@Param("name") String name,@Param("type") Integer type);
 

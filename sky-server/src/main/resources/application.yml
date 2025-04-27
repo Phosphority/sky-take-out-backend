@@ -49,7 +49,7 @@ sky:
     admin-token-name: token
     # 用户端
     user-secret-key: user
-    user-token-name: token
+    user-token-name: authentication
     user-ttl: 14400000
   alioss:
     endpoint: ${sky.alioss.endpoint}

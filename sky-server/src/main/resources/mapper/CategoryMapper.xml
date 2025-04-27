@@ -10,13 +10,18 @@
         </where>
         order by create_time desc
     </select>
+
     <select id="findListByType" resultType="Category">
         select * from category
         <where>
             <if test="type != null">
                 type = #{type}
             </if>
+            <if test="status != null">
+                and status = 1
+            </if>
         </where>
+        order by type
     </select>
 
     <update id="update" parameterType="Category">

@@ -18,13 +18,14 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -37,7 +38,10 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Resource
     private SetmealMapper setmealMapper;
+    @Resource
+    private RedisTemplate<String, DishVO> redisTemplate;
 
+    // NOTICE 添加操作不需要将缓存清除，因为添加操作默认是未启用
     @Override
     @Transactional
     public void addDish(DishDTO dishDTO) {
@@ -56,6 +60,7 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+    // 查询操作也不需要清除缓存
     @Override
     public PageResult page(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
@@ -71,15 +76,23 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void deleteBatch(List<Long> dishIds) {
+        Integer status = StatusConstant.ENABLE;
         // 1.判断是否有套餐包含了该菜品
         if (setmealMapper.findDishByDishId(dishIds) > 0) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
             // 2.判断菜品状态是否是在售状态
-        } else if (dishMapper.findOnSaleDishStatus(dishIds) > 0) {
+        } else if ((status = dishMapper.findOnSaleDishStatus(dishIds)) > 0) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             // 3.判断是否删除成功
         } else if (dishMapper.deleteBatch(dishIds)) {
             dishFlavorMapper.deleteBatch(dishIds);
+            // 判断是否起售，在售状态才需要删除缓存
+            if (status.equals(StatusConstant.ENABLE)) {
+                // 删除成功后清除缓存,不删除所有的，精确删除
+                for (Long dishId : dishIds) {
+                    redisTemplate.delete("dish_" + dishId);
+                }
+            }
         }
     }
 
@@ -95,6 +108,15 @@ public class DishServiceImpl implements DishService {
             dishFlavorMapper.deleteBatch(dishId);
             if (dishDTO.getFlavors() != null && !dishDTO.getFlavors().isEmpty()) {
                 dishFlavorMapper.insertDishFlavor(dishDTO.getFlavors(), dish.getId());
+                if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) {
+                    // TODO 这里其实是可以优化的，如果想要精确删除的话，需要原先的categoryId，如果与原先的categoryId相同
+                    // TODO 则只需删除当前修改的分类缓存，如果不同则删除这两个categoryId的缓存
+                    // 修改完成后删除所有的缓存
+                    Set<String> keys = redisTemplate.keys("dish_*");
+                    for (String key : keys) {
+                        redisTemplate.delete(key);
+                    }
+                }
             }
         }
     }
@@ -115,6 +137,13 @@ public class DishServiceImpl implements DishService {
         dish.setStatus(status);
         dish.setId(id);
         dishMapper.updateStatus(dish);
+        // 修改完成后删除所有的缓存
+        if (Objects.equals(status, StatusConstant.ENABLE)) {
+            Set<String> keys = redisTemplate.keys("dish_*");
+            for (String key : keys) {
+                redisTemplate.delete(key);
+            }
+        }
     }
 
     @Override

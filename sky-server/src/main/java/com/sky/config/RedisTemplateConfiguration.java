@@ -23,6 +23,7 @@ public class RedisTemplateConfiguration {
         // 而使用Jackson2JsonRedisSerializer在redis中是Json格式的字符串,
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         // NOTICE 如果将value的序列化器也设置为StringRedisSerializer这个序列化器的话，那就意味着在redis中只能String类型的value,不能存储Integer之类的
+        // 总之如果不需要去看redis中的数据的话，直接不设就好了，会默认使用jdk的序列化器，将数据以二进制的字节数据存储并回显的
 //        redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
