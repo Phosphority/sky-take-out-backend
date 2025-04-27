@@ -13,6 +13,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * jwt令牌校验的拦截器
@@ -50,7 +52,9 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
             log.info("当前用户id:{}", userId);
             // 3.将claims存入当前请求的线程中
-            BaseContext.setCurrentId(userId);
+            Map<String,Long> idClaims = new HashMap<>();
+            idClaims.put(JwtClaimsConstant.USER_ID, userId);
+            BaseContext.setCurrentId(idClaims);
             // 4.通过，放行
             return true;
         } catch (Exception ex) {

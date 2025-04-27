@@ -34,6 +34,5 @@ public interface DishMapper {
     @Update("update dish set status = #{status},update_time = #{updateTime},update_user = #{updateUser} where id = #{id}")
     void updateStatus(Dish dish);
 
-    @Select("select * from dish where category_id = #{categoryId}")
-    List<DishVO> findByCategoryId(long categoryId);
+    List<DishVO> findByCategoryId(long categoryId,Integer status);
 }

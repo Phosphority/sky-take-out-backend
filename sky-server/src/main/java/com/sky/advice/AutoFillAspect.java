@@ -7,8 +7,6 @@ import com.sky.context.BaseContext;
 import com.sky.enumeration.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Aspect
 @Component
@@ -44,7 +43,7 @@ public class AutoFillAspect {
         }
 
         Object entity = args[0];
-        long currentId = BaseContext.getCurrentId();
+        Map<String, Long> currentId = BaseContext.getCurrentId();
         LocalDateTime now = LocalDateTime.now();
 
         // 4.使用反射获取参数的set方法,以及set默认插入的值

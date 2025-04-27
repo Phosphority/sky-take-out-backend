@@ -1,14 +1,16 @@
 package com.sky.context;
 
+import java.util.Map;
+
 public class BaseContext {
 
-    public static ThreadLocal<Long> threadLocal = new ThreadLocal<>();
+    public static ThreadLocal<Map<String, Long>> threadLocal = new ThreadLocal<>();
 
-    public static void setCurrentId(Long id) {
-        threadLocal.set(id);
+    public static void setCurrentId(Map<String,Long> idClaims) {
+        threadLocal.set(idClaims);
     }
 
-    public static Long getCurrentId() {
+    public static Map<String, Long> getCurrentId() {
         return threadLocal.get();
     }
 

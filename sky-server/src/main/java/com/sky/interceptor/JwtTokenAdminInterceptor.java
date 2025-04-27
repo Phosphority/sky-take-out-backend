@@ -14,6 +14,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * jwt令牌校验的拦截器
@@ -51,7 +53,9 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
             log.info("当前员工id:{}", empId);
             // 3.将claims存入当前请求的线程中
-            BaseContext.setCurrentId(empId);
+            Map<String,Long> idClaims = new HashMap<>();
+            idClaims.put(JwtClaimsConstant.EMP_ID, empId);
+            BaseContext.setCurrentId(idClaims);
             // 4.通过，放行
             return true;
         } catch (Exception ex) {

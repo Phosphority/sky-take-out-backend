@@ -2,8 +2,10 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -115,7 +119,18 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishVO> findByCategoryId(long categoryId) {
-        return dishMapper.findByCategoryId(categoryId);
+        Set<String> keySet = BaseContext.getCurrentId().keySet();
+        String valueName = null;
+        for (String key : keySet) {
+            valueName = key;
+        }
+        if (valueName != null && valueName.equals(JwtClaimsConstant.USER_ID)) {
+            // 如果是用户，则只查询在售状态的菜品
+            return dishMapper.findByCategoryId(categoryId, 1);
+        } else {
+            // 如果是管理员，则status为null查询所有的菜品
+            return dishMapper.findByCategoryId(categoryId, null);
+        }
     }
 
 }
