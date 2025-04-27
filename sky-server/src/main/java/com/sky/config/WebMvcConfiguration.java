@@ -32,7 +32,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     // 注入拦截器
     @Resource
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
-    @Autowired
+    @Resource
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
     /**
@@ -45,7 +45,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/employee/login");
+                .excludePathPatterns("/admin/employee/login","/admin/employee/logout");
 
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
@@ -63,7 +63,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("苍穹外卖项目接口文档")
                 .version("2.0")
-                .description("苍穹外卖项目接口文档")
+                .description("管理端项目接口文档")
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .groupName("管理端接口")
@@ -81,14 +81,14 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("苍穹外卖项目接口文档")
                 .version("2.0")
-                .description("苍穹外卖项目接口文档")
+                .description("用户端项目接口文档")
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .groupName("用户端接口")
                 .apiInfo(apiInfo)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.any()) // 这个包下的所有请求路径都会被扫描
                 .build();
         return docket;
     }
@@ -110,8 +110,10 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 
+        // 设置解析Json参数
         converter.setObjectMapper(new JacksonObjectMapper());
 
+        // NOTICE 要将自定义好的JsonObjectMapper置顶，确保解析json时配置生效
         converters.add(0, converter);
     }
 }

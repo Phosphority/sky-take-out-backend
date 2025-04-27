@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.*;
 
 @Aspect
 @Component
@@ -29,7 +29,7 @@ public class AutoFillAspect {
     @Before("pointcut()")
     public void before(JoinPoint joinPoint) {
 
-        // NOTICE:注意这个切入的写法
+        // NOTICE 注意这个切入的写法
         // 1.获取切入点的方法与切入点的注解以及注解参数
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         AutoFill autoFill = signature.getMethod().getAnnotation(AutoFill.class);
@@ -43,7 +43,9 @@ public class AutoFillAspect {
         }
 
         Object entity = args[0];
-        Map<String, Long> currentId = BaseContext.getCurrentId();
+        Map<String, Long> claimsId = BaseContext.getCurrentId();
+        List<Long> values = new ArrayList<>(claimsId.values());
+        Long id = values.get(0);
         LocalDateTime now = LocalDateTime.now();
 
         // 4.使用反射获取参数的set方法,以及set默认插入的值
@@ -54,11 +56,11 @@ public class AutoFillAspect {
             Method setUpdateUser = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
 
             setUpdateTime.invoke(entity, now);
-            setUpdateUser.invoke(entity, currentId);
+            setUpdateUser.invoke(entity, id);
             // 5.判断是否设置create相关的值
             if (value == OperationType.INSERT) {
                 setCreteTime.invoke(entity, now);
-                setCreateUser.invoke(entity, currentId);
+                setCreateUser.invoke(entity, id);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
