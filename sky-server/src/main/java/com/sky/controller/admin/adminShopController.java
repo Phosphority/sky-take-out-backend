@@ -1,7 +1,6 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.ShopStatusConstant;
-import com.sky.constant.StatusConstant;
 import com.sky.result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,7 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/admin/shop")
@@ -19,13 +17,13 @@ import java.util.Objects;
 public class adminShopController {
 
     @Resource
-    private RedisTemplate<String,Integer> redisTemplate;
+    private RedisTemplate<String, Integer> redisTemplate;
 
     @PutMapping("/{status}")
     @ApiOperation("设置营业状态")
     public Result updateStatus(@PathVariable Integer status) {
-        log.info("将营业状态设置为:{}",status == 1 ? ShopStatusConstant.STATUS_OPEN :ShopStatusConstant.STATUS_CLOSE);
-        redisTemplate.opsForValue().set(ShopStatusConstant.SHOP_STATUS,status);
+        log.info("将营业状态设置为:{}", status == 1 ? ShopStatusConstant.STATUS_OPEN : ShopStatusConstant.STATUS_CLOSE);
+        redisTemplate.opsForValue().set(ShopStatusConstant.SHOP_STATUS, status);
         return Result.success();
     }
 
@@ -33,10 +31,10 @@ public class adminShopController {
     @ApiOperation("获取营业状态")
     public Result<Integer> getStatus() {
         Integer shopStatus = redisTemplate.opsForValue().get(ShopStatusConstant.SHOP_STATUS);
-        if(shopStatus == null){
+        if (shopStatus == null) {
             shopStatus = 0;
         }
-        log.info("店铺当前的营业状态为:{}", shopStatus == 1 ? ShopStatusConstant.STATUS_OPEN :ShopStatusConstant.STATUS_CLOSE);
+        log.info("店铺当前的营业状态为:{}", shopStatus == 1 ? ShopStatusConstant.STATUS_OPEN : ShopStatusConstant.STATUS_CLOSE);
         return Result.success(shopStatus);
     }
 }

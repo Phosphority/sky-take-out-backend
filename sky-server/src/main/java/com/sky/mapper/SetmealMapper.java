@@ -6,6 +6,7 @@ import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -20,6 +21,7 @@ public interface SetmealMapper {
     Integer findDishByDishId(List<Long> dishIds);
 
     @AutoFill(OperationType.INSERT)
+//  NOTICE @Options(useGeneratedKeys = true,keyColumn = "id",keyProperty = "id")  这里其实还可以使用注解的方式来简化操作
     void addSetmeal(Setmeal setmeal);
 
     Page<SetmealVO> page(Setmeal setmeal);

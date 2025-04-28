@@ -7,6 +7,7 @@ import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
@@ -16,6 +17,7 @@ import com.sky.service.SetmealService;
 import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,23 +89,24 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
 
-    @Transactional
+    //    @Transactional
     @Override
     public void updateSetmeal(SetmealDTO setmealDTO) {
-        Setmeal setmeal = Setmeal.builder()
-                .image(setmealDTO.getImage())
-                .price(setmealDTO.getPrice())
-                .name(setmealDTO.getName())
-                .description(setmealDTO.getDescription())
-                .categoryId(setmealDTO.getCategoryId())
-                .build();
+        Setmeal setmeal = Setmeal.builder().build();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
 
-        if (setmealMapper.updateSetmeal(setmeal) && setmealDTO.getSetmealDishes() != null && !setmealDTO.getSetmealDishes().isEmpty()) {
-            List<Long> dishIds = new ArrayList<>();
-            dishIds.add(setmealDTO.getId());
-            if (setmealDishMapper.deleteBatch(dishIds)) {
-                setmealDishMapper.addSetmealDish(setmealDTO.getSetmealDishes());
+        if (setmealMapper.updateSetmeal(setmeal) && setmealDishes != null && !setmealDishes.isEmpty()) {
+            // 批量删除套餐菜品的套餐的id，仅因为套餐删除默认是批量删除，所以说将套餐id封装成List集合
+            List<Long> dishId = new ArrayList<>();
+            dishId.add(setmealDTO.getId());
+            // NOTICE 这里是前端的问题，tmd为什么你前端不能将套餐id设好再发过来啊？前端不是有套餐id吗？？？
+            for (SetmealDish setmealDish : setmealDishes) {
+                setmealDish.setSetmealId(setmeal.getId());
             }
+            // 这里不需要做判断
+            setmealDishMapper.deleteBatch(dishId);
+            setmealDishMapper.addSetmealDish(setmealDishes);
         }
     }
 

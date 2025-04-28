@@ -10,6 +10,7 @@ import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,19 +25,21 @@ public class SetmealController {
     @Resource
     private SetmealService setmealService;
 
-    @GetMapping("list")
-    @ApiOperation("根据分类id查询套餐")
-    public Result<List<Setmeal>> getSetmeal(@RequestParam long categoryId) {
-        log.info("分类id为:{}", categoryId);
-        List<Setmeal> setmealList = setmealService.findByCategoryId(categoryId);
-        return Result.success(setmealList);
-    }
-
     @GetMapping("/dish/{id}")
     @ApiOperation("根据套餐id查询包含的菜品")
+    @Cacheable(cacheNames = "setmealCache",key = "#p0")
     public Result<List<DishItemVO>> getSetmealDish(@PathVariable long id) {
         log.info("套餐id为:{}",id);
         List<DishItemVO> dishItemVOS = setmealService.findDishesBySetmealId(id);
         return Result.success(dishItemVOS);
+    }
+
+    @GetMapping("list")
+    @ApiOperation("根据分类id查询分类下所属的套餐")
+    @Cacheable(cacheNames = "setmealCache",key = "#p0")
+    public Result<List<Setmeal>> getSetmeal(@RequestParam long categoryId) {
+        log.info("分类id为:{}", categoryId);
+        List<Setmeal> setmealList = setmealService.findByCategoryId(categoryId);
+        return Result.success(setmealList);
     }
 }

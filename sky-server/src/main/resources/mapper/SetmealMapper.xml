@@ -39,6 +39,7 @@
         </foreach>
         and status = 1
     </select>
+
     <select id="findById" resultMap="findById">
         select s.*,c.name as categoryName,
                sd.id as setmeal_dish_id,sd.name as dish_name,sd.setmeal_id,sd.dish_id as dish_id,sd.price as dish_price,sd.copies
