@@ -43,25 +43,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         List<ShoppingCart> list = shoppingCartMapping.findCart(shoppingCart);
 
         // 判断购物车中是否已经有该商品
-        if(list != null && !list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             ShoppingCart cart = list.get(0);
             Integer oldNumber = cart.getNumber();
             BigDecimal singlePrice = cart.getAmount().divide(BigDecimal.valueOf(oldNumber), 2, RoundingMode.HALF_UP);
             cart.setUserId(userId);
             cart.setNumber(oldNumber + 1);
-            cart.setAmount(singlePrice.multiply(BigDecimal.valueOf(oldNumber+1)));
+            cart.setAmount(singlePrice.multiply(BigDecimal.valueOf(oldNumber + 1)));
             shoppingCartMapping.updateCart(cart);
             // 添加完直接返回即可
             return;
         }
 
         // 如果没有则直接添加，但是要判断是哪一种是setmeal还是dish
-        if(shoppingCart.getSetmealId() != null && shoppingCart.getSetmealId() > 0) {
+        if (shoppingCart.getSetmealId() != null && shoppingCart.getSetmealId() > 0) {
             SetmealVO setmealVO = setmealMapper.findById(shoppingCart.getSetmealId());
             shoppingCart.setImage(setmealVO.getImage())
                     .setName(setmealVO.getName())
                     .setCreateTime(LocalDateTime.now());
-        }else if(shoppingCart.getDishId() != null && shoppingCart.getDishId() > 0) {
+        } else if (shoppingCart.getDishId() != null && shoppingCart.getDishId() > 0) {
             DishVO dishVO = dishMapper.findById(shoppingCart.getDishId());
             // 不需要考虑设置菜品口味，如果有，再BeanCopy的时候就已经set了，如果没有那么就让它为null即可
             shoppingCart.setImage(dishVO.getImage())
@@ -74,6 +74,42 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCart.setNumber(1);
         // 设置初始数量
         shoppingCartMapping.addShoppingCart(shoppingCart);
+    }
+
+    @Override
+    public List<ShoppingCart> listShoppingCart() {
+        ShoppingCart shoppingCart = ShoppingCart.builder()
+                .userId(BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID))
+                .build();
+        return shoppingCartMapping.findCart(shoppingCart);
+    }
+
+    @Override
+    public void cleanShoppingCart() {
+        shoppingCartMapping.cleanShoppingCart(BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID));
+    }
+
+    @Override
+    public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart shoppingCart = ShoppingCart.builder().build();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+        Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
+        shoppingCart.setUserId(userId);
+
+        List<ShoppingCart> list = shoppingCartMapping.findCart(shoppingCart);
+
+        // 如果有的话就将数量减一
+        if (list != null && !list.isEmpty()) {
+            ShoppingCart cart = list.get(0);
+            Integer oldNumber = cart.getNumber();
+            BigDecimal singlePrice = cart.getAmount().divide(BigDecimal.valueOf(oldNumber), 2, RoundingMode.HALF_UP);
+            cart.setNumber(oldNumber - 1)
+                .setAmount(singlePrice.multiply(BigDecimal.valueOf(oldNumber - 1)));  //将价格也改变
+            shoppingCartMapping.updateCart(cart);
+        }
+
+        // 没有的话就直接删除
+        shoppingCartMapping.subShoppingCart(shoppingCart);
     }
 
 

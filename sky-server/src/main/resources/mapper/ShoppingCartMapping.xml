@@ -7,13 +7,19 @@
         insert into shopping_cart(name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time)
         VALUES(#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor}, #{amount},#{createTime})
     </insert>
+    <delete id="subShoppingCart" parameterType="com.sky.dto.ShoppingCartDTO">
+        delete from shopping_cart where user_id = #{userId}
+        <if test="dishId != null"> and dish_id = #{dishId} </if>
+        <if test="dishFlavor != null"> and dish_flavor = #{dishFlavor} </if>
+        <if test="setmealId != null"> and setmeal_id = #{setmealId} </if>
+    </delete>
     <select id="findCart" resultType="ShoppingCart">
         select * from shopping_cart
         <where>
             <if test="setmealId != null"> setmeal_id = #{setmealId} </if>
             <if test="dishId != null"> dish_id = #{dishId} </if>
+            <if test="userId != null"> and user_id = #{userId} </if>
         </where>
-        and user_id = #{userId}
     </select>
     <update id="updateCart">
         update shopping_cart set number = #{number},amount = #{amount}

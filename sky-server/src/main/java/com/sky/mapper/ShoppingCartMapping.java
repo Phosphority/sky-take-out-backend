@@ -1,10 +1,8 @@
 package com.sky.mapper;
 
 import com.sky.entity.ShoppingCart;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -21,4 +19,12 @@ public interface ShoppingCartMapping {
     void updateCart(ShoppingCart cart);
 
     void addShoppingCart(ShoppingCart shoppingCart);
+
+    @Select("select * from shopping_cart where user_id = #{userId}")
+    List<ShoppingCart> listShoppingCart(Long aLong);
+
+    @Delete("delete from shopping_cart where user_id =#{userId}")
+    void cleanShoppingCart(Long aLong);
+
+    void subShoppingCart(ShoppingCart shoppingCart);
 }
