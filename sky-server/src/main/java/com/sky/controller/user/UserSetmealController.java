@@ -1,12 +1,9 @@
 package com.sky.controller.user;
 
 import com.sky.entity.Setmeal;
-import com.sky.entity.SetmealDish;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import com.sky.vo.DishItemVO;
-import com.sky.vo.DishOverViewVO;
-import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +17,7 @@ import java.util.List;
 @Api(tags = "用户套餐浏览接口")
 @Slf4j
 @RequestMapping("/user/setmeal")
-public class SetmealController {
+public class UserSetmealController {
 
     @Resource
     private SetmealService setmealService;

@@ -89,7 +89,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
 
-    //    @Transactional
+    @Transactional
     @Override
     public void updateSetmeal(SetmealDTO setmealDTO) {
         Setmeal setmeal = Setmeal.builder().build();

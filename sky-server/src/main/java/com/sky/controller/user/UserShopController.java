@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RequestMapping("/user/shop")
 @Api(tags = "用户店铺接口")
-public class userShopController {
+public class UserShopController {
 
     @Resource
     private RedisTemplate<String,Integer> redisTemplate;

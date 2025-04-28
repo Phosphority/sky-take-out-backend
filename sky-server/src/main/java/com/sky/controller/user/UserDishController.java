@@ -1,9 +1,7 @@
 package com.sky.controller.user;
 
-import com.sky.entity.Dish;
 import com.sky.result.Result;
 import com.sky.service.DishService;
-import com.sky.service.UserService;
 import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +17,7 @@ import java.util.List;
 @Api(tags = "用户菜品浏览接口")
 @Slf4j
 @RequestMapping("/user/dish")
-public class DishController {
+public class UserDishController {
 
     @Resource
     private DishService dishService;

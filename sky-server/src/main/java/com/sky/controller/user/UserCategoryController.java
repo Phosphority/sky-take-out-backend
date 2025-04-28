@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-@RestController("userCategoryController")
+@RestController
 @Api(tags = "用户分类接口")
 @Slf4j
 @RequestMapping("/user/category")
-public class CategoryController {
+public class UserCategoryController {
 
     @Resource
     private CategoryService categoryService;
