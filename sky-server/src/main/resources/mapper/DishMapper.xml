@@ -29,10 +29,30 @@
             #{dishId}
         </foreach>
     </select>
-    <select id="findByCategoryId" resultType="com.sky.vo.DishVO">
-        select * from dish where category_id = #{categoryId}
-        <if test="status != null">and status = 1</if>
+
+    <select id="findByCategoryId" resultMap="findByCategoryId">
+        select d.*,df.id dishFlavor_id,df.name dishFlavor_name,df.dish_id,df.value
+        from dish d left join dish_flavor df on d.id = df.dish_id
+        where d.category_id = #{categoryId}
+        <if test="status != null">and d.status = #{status}</if>
     </select>
+    <resultMap id="findByCategoryId" type="com.sky.vo.DishVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="price" property="price"/>
+        <result column="image" property="image"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="category_name" property="categoryName"/>
+        <collection property="flavors" ofType="DishFlavor" javaType="list">
+            <id column="dishFlavor_id" property="id"/>
+            <result column="dishFlavor_name" property="name"/>
+            <result column="dish_id" property="dishId"/>
+            <result column="value" property="value"/>
+        </collection>
+    </resultMap>
 
     <delete id="deleteBatch">
         delete from dish where id in
