@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -40,10 +41,10 @@ public class AddressBookController {
     }
 
     @PutMapping("/default")
-    @ApiOperation("设置默认地址")
-    public Result setDefault(@RequestParam Long id) {
+    @ApiOperation("更新默认地址")
+    public Result updateDefault(@RequestParam Integer id) {
         log.info("默认地址id为:{}", id);
-        addressBookService.setDefault(id);
+        addressBookService.updateDefault(Long.valueOf(id));
         return Result.success();
     }
 
@@ -57,11 +58,19 @@ public class AddressBookController {
 
     @GetMapping("/list")
     @ApiOperation("获取当前用户的所有地址信息")
-    public Result list() {
+    public Result<List<AddressBook>> list() {
         Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
         log.info("当前用户:{}", userId);
-        addressBookService.list(userId);
-        return Result.success();
+        List<AddressBook> addressBooks = addressBookService.list(userId);
+        return Result.success(addressBooks);
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询地址")
+    public Result<AddressBook> findById(@PathVariable Long id) {
+        log.info("地址id为:{}",id);
+        AddressBook addressBook = addressBookService.findById(id);
+        return Result.success(addressBook);
     }
 
     @DeleteMapping
