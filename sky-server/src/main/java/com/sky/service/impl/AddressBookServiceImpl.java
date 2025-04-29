@@ -27,7 +27,24 @@ public class AddressBookServiceImpl implements AddressBookService {
     }
 
     @Override
-    public void delete(Long userId) {
-        addressBookMapper.delete(userId);
+    public void delete(Long id) {
+        addressBookMapper.delete(id);
+    }
+
+    @Override
+    public void setDefault(Long id) {
+        Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
+        addressBookMapper.setDefault(id,userId);
+    }
+
+    @Override
+    public void getDefault() {
+        Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
+        addressBookMapper.getDefault(userId);
+    }
+
+    @Override
+    public void update(AddressBook addressBook) {
+        addressBookMapper.update(addressBook);
     }
 }

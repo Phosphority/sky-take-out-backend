@@ -31,6 +31,30 @@ public class AddressBookController {
         return Result.success();
     }
 
+    @PutMapping
+    @ApiOperation("根据id修改用户保存的地址")
+    public Result update(@RequestBody AddressBook addressBook) {
+        log.info("修改的用户地址id为");
+        addressBookService.update(addressBook);
+        return Result.success();
+    }
+
+    @PutMapping("/default")
+    @ApiOperation("设置默认地址")
+    public Result setDefault(@RequestParam Long id) {
+        log.info("默认地址id为:{}", id);
+        addressBookService.setDefault(id);
+        return Result.success();
+    }
+
+    @GetMapping("/default")
+    @ApiOperation("获取默认地址")
+    public Result getDefault() {
+        log.info("因为日志，所以日志啊");
+        addressBookService.getDefault();
+        return Result.success();
+    }
+
     @GetMapping("/list")
     @ApiOperation("获取当前用户的所有地址信息")
     public Result list() {
@@ -41,10 +65,10 @@ public class AddressBookController {
     }
 
     @DeleteMapping
-    @ApiOperation("根据id删除地址")
-    public Result delete(Long userId) {
-        log.info("删除地址簿id:{}", userId);
-        addressBookService.delete(userId);
+    @ApiOperation("根据地址id删除地址")
+    public Result delete(@RequestParam Long id) {
+        log.info("删除地址簿id:{}", id);
+        addressBookService.delete(id);
         return Result.success();
     }
 }

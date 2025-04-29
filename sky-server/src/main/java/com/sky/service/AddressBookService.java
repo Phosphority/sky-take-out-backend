@@ -8,4 +8,10 @@ public interface AddressBookService {
     AddressBook list(Long userId);
 
     void delete(Long userId);
+
+    void setDefault(Long id);
+
+    void getDefault();
+
+    void update(AddressBook addressBook);
 }
