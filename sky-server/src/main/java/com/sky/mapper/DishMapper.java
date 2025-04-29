@@ -6,6 +6,7 @@ import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -34,5 +35,5 @@ public interface DishMapper {
     @Update("update dish set status = #{status},update_time = #{updateTime},update_user = #{updateUser} where id = #{id}")
     void updateStatus(Dish dish);
 
-    List<DishVO> findByCategoryId(long categoryId,Integer status);
+    List<DishVO> findByCategoryId(@Param("categoryId") Long categoryId,@Param("status") Integer status);
 }

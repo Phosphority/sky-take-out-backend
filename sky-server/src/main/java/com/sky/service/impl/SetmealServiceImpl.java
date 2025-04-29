@@ -2,8 +2,10 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -133,7 +136,17 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Override
     public List<Setmeal> findByCategoryId(long categoryId) {
-        return setmealMapper.findByCategoryId(categoryId);
+        Set<String> keySet = BaseContext.getCurrentId().keySet();
+        String valueName = null;
+        for (String key : keySet) {
+            valueName = key;
+        }
+
+        if (valueName != null && valueName.equals(JwtClaimsConstant.USER_ID)) {
+            return setmealMapper.findByCategoryId(categoryId,1);
+        }else {
+            return setmealMapper.findByCategoryId(categoryId,null);
+        }
     }
 
     @Override

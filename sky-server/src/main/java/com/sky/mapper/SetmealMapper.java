@@ -6,7 +6,7 @@ import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -43,8 +43,7 @@ public interface SetmealMapper {
     @Update("update setmeal set status = #{status} where id = #{id}")
     void updateSetmealStatus(Setmeal setmeal);
 
-    @Select("select * from setmeal where category_id = #{categoryId}")
-    List<Setmeal> findByCategoryId(long categoryId);
+    List<Setmeal> findByCategoryId(@Param("categoryId") Long categoryId,@Param("status") Integer status);
 }
 
 

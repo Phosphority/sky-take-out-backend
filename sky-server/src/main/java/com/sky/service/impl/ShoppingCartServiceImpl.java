@@ -59,6 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (shoppingCart.getSetmealId() != null && shoppingCart.getSetmealId() > 0) {
             SetmealVO setmealVO = setmealMapper.findById(shoppingCart.getSetmealId());
             shoppingCart.setImage(setmealVO.getImage())
+                    .setAmount(setmealVO.getPrice())  // NOTICE 这里忘记设Amount了，导致插入失败，原因为这个值不能为空
                     .setName(setmealVO.getName())
                     .setCreateTime(LocalDateTime.now());
         } else if (shoppingCart.getDishId() != null && shoppingCart.getDishId() > 0) {
