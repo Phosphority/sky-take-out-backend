@@ -13,7 +13,7 @@ public interface AddressBookService {
 
     void updateDefault(Long id);
 
-    void getDefault();
+    AddressBook getDefault();
 
     void update(AddressBook addressBook);
 

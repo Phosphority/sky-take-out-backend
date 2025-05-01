@@ -18,6 +18,7 @@ import com.sky.service.OrdersService;
 import com.sky.vo.OrderSubmitVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class OrdersServiceImpl implements OrdersService {
 
     @Resource
@@ -58,6 +60,10 @@ public class OrdersServiceImpl implements OrdersService {
         orders.setNumber(String.valueOf(System.currentTimeMillis()) + userId)
                 .setConsignee(addressBook.getConsignee())
                 .setPayStatus(Orders.UN_PAID)
+                .setUserId(userId)
+                .setPhone(addressBook.getPhone())
+                .setAddress(addressBook.getProvinceName()+addressBook.getCityName()+addressBook.getDistrictName())
+                .setStatus(1)
                 .setOrderTime(LocalDateTime.now());
         ordersMapper.insert(orders);
 

@@ -18,7 +18,7 @@ public interface AddressBookMapper {
     void delete(Long id);
 
     @Select("select * from address_book where user_id = #{userId} and is_default = 1")
-    void getDefault(Long userId);
+    AddressBook getDefault(Long userId);
 
     void update(AddressBook addressBook);
 

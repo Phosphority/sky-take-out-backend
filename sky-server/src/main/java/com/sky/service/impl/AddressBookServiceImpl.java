@@ -1,10 +1,8 @@
 package com.sky.service.impl;
 
 import com.sky.constant.JwtClaimsConstant;
-import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.entity.AddressBook;
-import com.sky.exception.DefaultAddressIsOnlyException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.service.AddressBookService;
 import org.springframework.stereotype.Service;
@@ -52,9 +50,9 @@ public class AddressBookServiceImpl implements AddressBookService {
     }
 
     @Override
-    public void getDefault() {
+    public AddressBook getDefault() {
         Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
-        addressBookMapper.getDefault(userId);
+        return addressBookMapper.getDefault(userId);
     }
 
     @Override

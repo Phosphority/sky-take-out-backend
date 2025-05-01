@@ -50,10 +50,10 @@ public class AddressBookController {
 
     @GetMapping("/default")
     @ApiOperation("获取默认地址")
-    public Result getDefault() {
+    public Result<AddressBook> getDefault() {
         log.info("因为日志，所以日志啊");
-        addressBookService.getDefault();
-        return Result.success();
+        AddressBook addressBook = addressBookService.getDefault();
+        return Result.success(addressBook);
     }
 
     @GetMapping("/list")
