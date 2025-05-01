@@ -38,17 +38,17 @@ public class AddressBookServiceImpl implements AddressBookService {
     public void updateDefault(Long id) {
         Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
 
-        // TODO
-//        AddressBook addressBook = addressBookMapper.findDefaultAddress(userId);
+        // 先将地址簿中该用户的所有地址都设为非默认地址
+        AddressBook addressBook = AddressBook.builder()
+                .userId(userId)
+                .isDefault(0)
+                .build();
+        addressBookMapper.update(addressBook);
 
-//        // 检查地址簿中是否已有默认地址,或者说该地址是否已经是默认地址
-//        if(addressBook != null && !addressBook.getId().equals(id)) {
-//            throw new DefaultAddressIsOnlyException(MessageConstant.DEFAULT_ADDRESS_IS_ONLY);
-//        }else{
-//            throw new DefaultAddressIsOnlyException(MessageConstant.ALREADY_DEFAULT_ADDRESS);
-//        }
-//        // 最后查询到地址簿中的结果为null，再将默认地址设置为该地址
-        
+        // 然后直接将这个设置为默认地址即可
+        addressBook.setId(id);
+        addressBook.setIsDefault(1);
+        addressBookMapper.update(addressBook);
     }
 
     @Override

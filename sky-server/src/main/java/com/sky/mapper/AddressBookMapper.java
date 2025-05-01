@@ -17,18 +17,9 @@ public interface AddressBookMapper {
     @Delete("delete from address_book where id = #{id}")
     void delete(Long id);
 
-    @Update("update address_book set is_default = #{isDefault} where id = #{id}")
-    void setDefault(@Param("isDefault") Integer isDefault,@Param("id") Long id);
-
     @Select("select * from address_book where user_id = #{userId} and is_default = 1")
     void getDefault(Long userId);
 
-    @Update("update address_book " +
-            "set consignee = #{consignee},sex = #{sex},phone = #{phone}," +
-            "province_code = #{provinceCode},province_name = #{provinceName}," +
-            "city_code = #{cityCode},city_name = #{cityName}," +
-            "district_code = #{districtCode},district_name = #{districtName}," +
-            "detail = #{detail},label = #{label} where id = #{id}")
     void update(AddressBook addressBook);
 
     @Select("select * from address_book where id = #{id}")

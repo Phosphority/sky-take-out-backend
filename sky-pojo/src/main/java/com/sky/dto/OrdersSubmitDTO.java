@@ -16,7 +16,8 @@ public class OrdersSubmitDTO implements Serializable {
     //备注
     private String remark;
     //预计送达时间
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    // 我已经在configuration中已经配置好了JSONObjectMapping的配置项
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime estimatedDeliveryTime;
     //配送状态  1立即送出  0选择具体时间
     private Integer deliveryStatus;
