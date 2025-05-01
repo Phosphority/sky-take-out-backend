@@ -6,6 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface OrdersMapper {
-    @Insert("insert into orders)
+//    @Insert("insert into orders)
     void submit(Orders orders);
 }
