@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = "用户套餐浏览接口")
 @Slf4j
 @RequestMapping("/user/setmeal")
-public class UserSetmealController {
+public class SetmealController {
 
     @Resource
     private SetmealService setmealService;

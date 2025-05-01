@@ -40,7 +40,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
         shoppingCart.setUserId(userId);
 
-        List<ShoppingCart> list = shoppingCartMapping.findCart(shoppingCart);
+        List<ShoppingCart> list = shoppingCartMapping.list(shoppingCart);
 
         // 判断购物车中是否已经有该商品
         if (list != null && !list.isEmpty()) {
@@ -82,7 +82,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = ShoppingCart.builder()
                 .userId(BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID))
                 .build();
-        return shoppingCartMapping.findCart(shoppingCart);
+        return shoppingCartMapping.list(shoppingCart);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
         shoppingCart.setUserId(userId);
 
-        List<ShoppingCart> list = shoppingCartMapping.findCart(shoppingCart);
+        List<ShoppingCart> list = shoppingCartMapping.list(shoppingCart);
 
         // 如果有的话就将数量减一
         if (list != null && !list.isEmpty()) {

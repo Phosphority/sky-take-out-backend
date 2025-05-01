@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class Orders implements Serializable {
 
     /**
@@ -35,6 +38,7 @@ public class Orders implements Serializable {
     public static final Integer PAID = 1;
     public static final Integer REFUND = 2;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;

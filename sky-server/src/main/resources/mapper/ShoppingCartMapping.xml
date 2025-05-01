@@ -13,7 +13,7 @@
         <if test="dishFlavor != null"> and dish_flavor = #{dishFlavor} </if>
         <if test="setmealId != null"> and setmeal_id = #{setmealId} </if>
     </delete>
-    <select id="findCart" resultType="ShoppingCart">
+    <select id="list" resultType="ShoppingCart">
         select * from shopping_cart
         <where>
             <if test="setmealId != null"> setmeal_id = #{setmealId} </if>
