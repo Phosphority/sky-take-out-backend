@@ -18,3 +18,6 @@ sky:
   wechat:
     appid: wxd75e53bf679d3a01
     secret: 31e6da48b74c0a6908a675b820efcd41
+    mchid: 1561414331
+    notify-url: https://73c83068.r8.cpolar.top/notify/paySuccess
+    refund-notify-url: https://73c83068.r8.cpolar.top/notify/refundSuccess
