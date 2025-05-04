@@ -29,4 +29,7 @@ public interface OrdersMapper {
 
     @Select("select * from orders where status = #{status} and order_time < #{time} ")
     List<Orders> findByStatusAndOrderTimeLT(@Param("status") Integer status, @Param("time") LocalTime time);
+
+    @Select("select * from orders where id = #{id}")
+    Orders reminder(Long id);
 }

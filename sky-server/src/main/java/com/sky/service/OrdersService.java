@@ -21,4 +21,6 @@ public interface OrdersService {
      * @param outTradeNo
      */
     void paySuccess(String outTradeNo);
+
+    void reminder(Integer id);
 }

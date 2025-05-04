@@ -151,8 +151,20 @@ public class OrdersServiceImpl implements OrdersService {
         Map<String,Object> map = new HashMap<>();
         map.put("type",1);
         map.put("orderId",ordersDB.getId());
-        map.put("content",outTradeNo);
+        map.put("content","您有新的订单:"+ordersDB.getNumber()+"请及时处理");
 
+        String json = JSONObject.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+    }
+
+    @Override
+    public void reminder(Integer id) {
+        Orders order = ordersMapper.reminder(Long.valueOf(id));
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",2);
+        map.put("orderId",order.getId());
+        map.put("content","您有新的订单:"+order.getNumber()+"请及时处理");
         String json = JSONObject.toJSONString(map);
         webSocketServer.sendToAllClient(json);
     }
