@@ -16,6 +16,7 @@ import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import org.springframework.beans.BeanUtils;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,9 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -42,6 +45,8 @@ public class OrdersServiceImpl implements OrdersService {
     private UserMapper userMapper;
     @Resource
     private WeChatPayUtil weChatPayUtil;
+    @Resource
+    private WebSocketServer webSocketServer;
 
 
     @Override
@@ -142,6 +147,14 @@ public class OrdersServiceImpl implements OrdersService {
                 .build();
 
         ordersMapper.update(orders);
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",1);
+        map.put("orderId",ordersDB.getId());
+        map.put("content",outTradeNo);
+
+        String json = JSONObject.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 }
 

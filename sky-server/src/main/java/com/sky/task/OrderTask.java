@@ -20,6 +20,7 @@ public class OrderTask {
 
     @Scheduled(cron = "0 * * * * *")
     public void cancelPastPaymentOrder () {
+        log.info("定时任务超过15分钟的订单自动取消");
         LocalTime now = LocalTime.now();
 
         LocalTime time = now.plusMinutes(-15);
@@ -42,6 +43,7 @@ public class OrderTask {
      */
     @Scheduled(cron = "0 0 1 * * ?")
     public void processDeliveryOrders () {
+        log.info("将前一天还在派送中的订单修改未已完成");
         LocalTime now = LocalTime.now();
         LocalTime time = now.plusMinutes(-60);
 
