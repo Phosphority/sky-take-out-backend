@@ -49,7 +49,7 @@ public class OrdersController {
 
     @GetMapping("/reminder/{id}")
     @ApiOperation("用户催单")
-    public Result reminder(@PathVariable Integer id) {
+    public Result reminder(@PathVariable Long id) {
         ordersService.reminder(id);
         return Result.success();
     }

@@ -17,7 +17,6 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import org.springframework.beans.BeanUtils;
 import com.sky.websocket.WebSocketServer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,8 +157,8 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public void reminder(Integer id) {
-        Orders order = ordersMapper.reminder(Long.valueOf(id));
+    public void reminder(Long id) {
+        Orders order = ordersMapper.reminder(id);
 
         Map<String,Object> map = new HashMap<>();
         map.put("type",2);

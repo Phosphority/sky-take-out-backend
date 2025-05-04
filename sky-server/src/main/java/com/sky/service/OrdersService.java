@@ -22,5 +22,5 @@ public interface OrdersService {
      */
     void paySuccess(String outTradeNo);
 
-    void reminder(Integer id);
+    void reminder(Long id);
 }
