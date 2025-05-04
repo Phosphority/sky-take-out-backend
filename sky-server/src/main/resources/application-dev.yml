@@ -19,5 +19,5 @@ sky:
     appid: wxd75e53bf679d3a01
     secret: 31e6da48b74c0a6908a675b820efcd41
     mchid: 1561414331
-    notify-url: https://43a6348a.r8.cpolar.top/notify/paySuccess
-    refund-notify-url: https://43a6348a.r8.cpolar.top/notify/refundSuccess
+    notify-url: https://19936c1b.r8.cpolar.top/notify/paySuccess
+    refund-notify-url: https://19936c1b.r8.cpolar.top/notify/refundSuccess

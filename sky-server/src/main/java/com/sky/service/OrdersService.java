@@ -27,4 +27,6 @@ public interface OrdersService {
     void reminder(Long id);
 
     PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }

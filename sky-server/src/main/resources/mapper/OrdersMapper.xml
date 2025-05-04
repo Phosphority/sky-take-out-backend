@@ -45,15 +45,36 @@
         where id = #{id}
     </update>
 
-    <select id="historyOrders" resultMap="historyOrders">
+    <select id="conditionSearch" resultType="Orders">
         select * from orders
+        <where>
+            <if test="beginTime != null">and begin_time = #{beginTime}</if>
+            <if test="endTime != null">and end_time = #{endTime}</if>
+            <if test="number != null">and number = #{number}</if>
+            <if test="phone != null">and phone = #{phone}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="historyOrders" resultMap="historyOrders">
+        select o.*,od.id order_detail_id,od.name,od.image,od.amount,
+        od.number order_detail_number,od.order_id,od.dish_flavor,od.dish_id
+        from orders o left join order_detail od on o.id = od.order_id
         <where>
             <if test="userId != null">and userId = #{userId}</if>
             <if test="status != null">and status = #{status}</if>
         </where>
     </select>
     <resultMap id="historyOrders" type="com.sky.vo.OrdersHistoryVO">
-
+        <collection property="orderDetailList" column="orderDetailList" ofType="OrderDetail" javaType="list">
+            <id column="order_detail_id" property="id"/>
+            <result column="order_id" property="orderId"/>
+            <result column="dish_flavor" property="dishFlavor"/>
+            <result column="dish_id" property="dishId"/>
+            <result column="name" property="name"/>
+            <result column="image" property="image"/>
+            <result column="amount" property="amount"/>
+        </collection>
     </resultMap>
 
 

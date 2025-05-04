@@ -40,4 +40,6 @@ public interface OrdersMapper {
     void updateStatus(@Param("orderStatus") Integer orderStatus,@Param("orderPaidStatus") Integer orderPaidStatus,@Param("check_out_time") LocalDateTime check_out_time,@Param("number") String number);
 
     Page<OrdersHistoryVO> historyOrders(Orders orders);
+
+    Page<Orders> conditionSearch(Orders orders);
 }

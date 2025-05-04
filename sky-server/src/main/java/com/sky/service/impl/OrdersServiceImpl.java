@@ -14,11 +14,13 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.OrdersService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrdersHistoryVO;
+import com.sky.vo.OrdersSearchVO;
 import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -176,6 +178,31 @@ public class OrdersServiceImpl implements OrdersService {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<OrdersHistoryVO> ordersPage = ordersMapper.historyOrders(orders);
         return new PageResult(ordersPage.getTotal(), ordersPage.getResult());
+    }
+
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        Orders orders = Orders.builder().build();
+        BeanUtils.copyProperties(ordersPageQueryDTO, orders);
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> ordersList = ordersMapper.conditionSearch(orders);
+
+        List<OrdersSearchVO> ordersSearchVOS = new ArrayList<>();
+        if(ordersList != null && !ordersList.isEmpty()){
+            ordersList.forEach(order -> {
+                OrdersSearchVO ordersSearchVO = OrdersSearchVO.builder().build();
+                StringBuilder sb = new StringBuilder();
+                List<String> dishesNames = orderDetailMapper.findDishesName(order.getId());
+                for(int i = 0; i <= dishesNames.size() - 1; i++){
+                    sb.append(dishesNames.get(i));
+                }
+                BeanUtils.copyProperties(order, ordersSearchVO);
+                ordersSearchVO.setOrderDishes(sb.toString());
+                ordersSearchVOS.add(ordersSearchVO);
+            });
+        }
+
+        return new PageResult(ordersList.getTotal(),ordersSearchVOS);
     }
 
 
