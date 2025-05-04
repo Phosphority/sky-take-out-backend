@@ -1,7 +1,9 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrdersService;
 import com.sky.vo.OrderPaymentVO;
@@ -23,11 +25,10 @@ public class OrdersController {
     private OrdersService ordersService;
 
 
-
     @PostMapping("/submit")
     @ApiOperation("用户下单")
     public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO ordersSubmitDTO) {
-        log.info("订单提交信息为:{}",ordersSubmitDTO.toString());
+        log.info("订单提交信息为:{}", ordersSubmitDTO.toString());
         OrderSubmitVO submitVO = ordersService.submit(ordersSubmitDTO);
         return Result.success(submitVO);
     }
@@ -45,6 +46,14 @@ public class OrdersController {
         OrderPaymentVO orderPaymentVO = ordersService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
+    }
+
+    @GetMapping("/historyOrders")
+    @ApiOperation("用户获取历史订单")
+    public Result<PageResult> historyOrders(@RequestBody OrdersPageQueryDTO ordersPageQueryDTO) {
+        log.info("用户获取历史订单");
+        PageResult ordersList = ordersService.historyOrders(ordersPageQueryDTO);
+        return Result.success(ordersList);
     }
 
     @GetMapping("/reminder/{id}")

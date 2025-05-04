@@ -1,27 +1,30 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
-import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.service.OrdersService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
-import org.springframework.beans.BeanUtils;
+import com.sky.vo.OrdersHistoryVO;
 import com.sky.websocket.WebSocketServer;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +74,7 @@ public class OrdersServiceImpl implements OrdersService {
                 .setPayStatus(Orders.UN_PAID)
                 .setUserId(userId)
                 .setPhone(addressBook.getPhone())
-                .setAddress(addressBook.getProvinceName()+addressBook.getCityName()+addressBook.getDistrictName())
+                .setAddress(addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName())
                 .setStatus(1)
                 .setOrderTime(LocalDateTime.now());
         ordersMapper.insert(orders);
@@ -105,25 +108,16 @@ public class OrdersServiceImpl implements OrdersService {
      * @return
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
-        // 当前登录用户id
-        Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
-        User user = userMapper.getById(userId);
-
-        //调用微信支付接口，生成预支付交易单
-        JSONObject jsonObject = weChatPayUtil.pay(
-                ordersPaymentDTO.getOrderNumber(), //商户订单号
-                new BigDecimal(0.01), //支付金额，单位 元
-                "苍穹外卖订单", //商品描述
-                user.getOpenid() //微信用户的openid
-        );
-
-        if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
-            throw new OrderBusinessException("该订单已支付");
-        }
-
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", "ORDERPAID");
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
 
+        //发现没有将结账时间 check_out属性赋值，所以在这里更新
+        LocalDateTime check_out_time = LocalDateTime.now();
+        String orderNumber = ordersPaymentDTO.getOrderNumber();
+        // 订单状态修改未待接单，支付状态为已支付
+        ordersMapper.updateStatus(Orders.TO_BE_CONFIRMED, Orders.PAID, check_out_time, orderNumber);
         return vo;
     }
 
@@ -147,10 +141,10 @@ public class OrdersServiceImpl implements OrdersService {
 
         ordersMapper.update(orders);
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("type",1);
-        map.put("orderId",ordersDB.getId());
-        map.put("content","您有新的订单:"+ordersDB.getNumber()+"请及时处理");
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1);
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "您有新的订单:" + ordersDB.getNumber() + "请及时处理");
 
         String json = JSONObject.toJSONString(map);
         webSocketServer.sendToAllClient(json);
@@ -160,15 +154,47 @@ public class OrdersServiceImpl implements OrdersService {
     public void reminder(Long id) {
         Orders order = ordersMapper.reminder(id);
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("type",2);
-        map.put("orderId",order.getId());
-        map.put("content","您有新的订单:"+order.getNumber()+"请及时处理");
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 2);
+        map.put("orderId", order.getId());
+        map.put("content", "您有新的订单:" + order.getNumber() + "请及时处理");
         String json = JSONObject.toJSONString(map);
         webSocketServer.sendToAllClient(json);
     }
+
+    /**
+     * 历史订单分页查询
+     *
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        Orders orders = Orders.builder().build();
+        BeanUtils.copyProperties(ordersPageQueryDTO, orders);
+        orders.setUserId(BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID));
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<OrdersHistoryVO> ordersPage = ordersMapper.historyOrders(orders);
+        return new PageResult(ordersPage.getTotal(), ordersPage.getResult());
+    }
+
+
 }
 
+
+// 跳过微信支付接口
+//调用微信支付接口，生成预支付交易单
+
+//    JSONObject jsonObject = weChatPayUtil.pay(
+//        ordersPaymentDTO.getOrderNumber(), //商户订单号
+//        new BigDecimal(0.01), //支付金额，单位 元
+//        "苍穹外卖订单", //商品描述
+//        user.getOpenid() //微信用户的openid
+//    );
+//
+//    if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
+//  throw new OrderBusinessException("该订单已支付");
+//    }
 
 
 

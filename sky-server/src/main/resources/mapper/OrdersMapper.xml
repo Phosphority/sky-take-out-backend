@@ -45,5 +45,16 @@
         where id = #{id}
     </update>
 
+    <select id="historyOrders" resultMap="historyOrders">
+        select * from orders
+        <where>
+            <if test="userId != null">and userId = #{userId}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+    </select>
+    <resultMap id="historyOrders" type="com.sky.vo.OrdersHistoryVO">
+
+    </resultMap>
+
 
 </mapper>

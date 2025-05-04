@@ -21,9 +21,9 @@ public class OrderTask {
     @Scheduled(cron = "0 * * * * *")
     public void cancelPastPaymentOrder () {
         log.info("定时任务超过15分钟的订单自动取消");
-        LocalTime now = LocalTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        LocalTime time = now.plusMinutes(-15);
+        LocalDateTime time = now.plusMinutes(-15);
 
         // 超过15分钟未支付的订单自动取消
         List<Orders> ordersList = ordersMapper.findByStatusAndOrderTimeLT(Orders.PENDING_PAYMENT,time);
@@ -44,8 +44,8 @@ public class OrderTask {
     @Scheduled(cron = "0 0 1 * * ?")
     public void processDeliveryOrders () {
         log.info("将前一天还在派送中的订单修改未已完成");
-        LocalTime now = LocalTime.now();
-        LocalTime time = now.plusMinutes(-60);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime time = now.plusMinutes(-60);
 
         List<Orders> ordersList = ordersMapper.findByStatusAndOrderTimeLT(Orders.DELIVERY_IN_PROGRESS,time);
 
