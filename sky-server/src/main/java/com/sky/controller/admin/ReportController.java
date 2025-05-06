@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -30,9 +31,11 @@ public class ReportController {
     @GetMapping("/turnoverStatistics")
     @ApiOperation("营业额统计接口")
     public Result<TurnoverReportVO> turnoverStatistics(
-            @DateTimeFormat(pattern = "yyyy-mm-dd")
+            @RequestParam("begin")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
             LocalDate begin,
-            @DateTimeFormat(pattern = "yyyy-mm-dd")
+            @RequestParam("end")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
             LocalDate end
     ) {
         TurnoverReportVO turnoverStatistics = reportService.turnoverStatistics(begin,end);

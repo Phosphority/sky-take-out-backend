@@ -5,7 +5,7 @@ import com.sky.mapper.ReportMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
@@ -33,9 +33,9 @@ public class ReportServiceImpl implements ReportService {
 
         // 得到每天的所对应的营业额
         List<Double> totalList = new ArrayList<>();
-        while (!dateList.isEmpty()) {
-            LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
-            LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        for (LocalDate date : dateList) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
             Map<String, Object> map = new HashMap<>();
             map.put("begin", beginTime);
             map.put("end", endTime);
@@ -47,8 +47,8 @@ public class ReportServiceImpl implements ReportService {
         // 返回封装好的数据
         return TurnoverReportVO
                 .builder()
-                .turnoverList(StringUtils.join())
-                .dateList(StringUtils.collectionToCommaDelimitedString(dateList))
+                .turnoverList(StringUtils.join(totalList,","))
+                .dateList(StringUtils.join(dateList,","))
                 .build();
     }
 }

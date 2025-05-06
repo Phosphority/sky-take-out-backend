@@ -29,4 +29,14 @@ public interface OrdersService {
     PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO);
 
     PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    void confirm(Long id);
+
+    void rejection(Long id, String rejectionReason);
+
+    void cancel(Long id, String cancelReason);
+
+    void delivery(Long id);
+
+    void complete(Long id);
 }

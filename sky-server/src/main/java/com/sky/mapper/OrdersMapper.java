@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrdersHistoryVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,5 +42,5 @@ public interface OrdersMapper {
 
     Page<OrdersHistoryVO> historyOrders(Orders orders);
 
-    Page<Orders> conditionSearch(Orders orders);
+    Page<Orders> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }

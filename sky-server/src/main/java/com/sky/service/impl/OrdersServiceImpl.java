@@ -9,12 +9,14 @@ import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
-import com.sky.entity.*;
+import com.sky.entity.AddressBook;
+import com.sky.entity.OrderDetail;
+import com.sky.entity.Orders;
+import com.sky.entity.ShoppingCart;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.service.OrdersService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
@@ -185,15 +187,15 @@ public class OrdersServiceImpl implements OrdersService {
         Orders orders = Orders.builder().build();
         BeanUtils.copyProperties(ordersPageQueryDTO, orders);
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        Page<Orders> ordersList = ordersMapper.conditionSearch(orders);
+        Page<Orders> ordersList = ordersMapper.conditionSearch(ordersPageQueryDTO);
 
         List<OrdersSearchVO> ordersSearchVOS = new ArrayList<>();
-        if(ordersList != null && !ordersList.isEmpty()){
+        if (ordersList != null && !ordersList.isEmpty()) {
             ordersList.forEach(order -> {
                 OrdersSearchVO ordersSearchVO = OrdersSearchVO.builder().build();
                 StringBuilder sb = new StringBuilder();
                 List<String> dishesNames = orderDetailMapper.findDishesName(order.getId());
-                for(int i = 0; i <= dishesNames.size() - 1; i++){
+                for (int i = 0; i <= dishesNames.size() - 1; i++) {
                     sb.append(dishesNames.get(i));
                 }
                 BeanUtils.copyProperties(order, ordersSearchVO);
@@ -202,7 +204,56 @@ public class OrdersServiceImpl implements OrdersService {
             });
         }
 
-        return new PageResult(ordersList.getTotal(),ordersSearchVOS);
+        return new PageResult(ordersList.getTotal(), ordersSearchVOS);
+    }
+
+    @Override
+    public void confirm(Long id) {
+        Orders orders = Orders.builder()
+                .status(Orders.TO_BE_CONFIRMED)
+                .id(id)
+                .build();
+        ordersMapper.update(orders);
+    }
+
+    @Override
+    public void rejection(Long id, String rejectionReason) {
+        Orders orders = Orders.builder()
+                .status(Orders.CANCELLED)
+                .rejectionReason(rejectionReason)
+                .id(id)
+                .build();
+        ordersMapper.update(orders);
+    }
+
+    @Override
+    public void cancel(Long id, String cancelReason) {
+        Orders orders = Orders.builder()
+                .status(Orders.CANCELLED)
+                .cancelReason(cancelReason)
+                .id(id)
+                .build();
+        ordersMapper.update(orders);
+    }
+
+    @Override
+    public void delivery(Long id) {
+        Orders orders = Orders.builder()
+                .status(Orders.DELIVERY_IN_PROGRESS)
+                .estimatedDeliveryTime(LocalDateTime.now().plusMinutes(50))
+                .id(id)
+                .build();
+        ordersMapper.update(orders);
+    }
+
+    @Override
+    public void complete(Long id) {
+        Orders orders = Orders.builder()
+                .status(Orders.COMPLETED)
+                .deliveryTime(LocalDateTime.now())
+                .id(id)
+                .build();
+        ordersMapper.update(orders);
     }
 
 

@@ -44,7 +44,6 @@ public class OrdersController {
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         log.info("订单支付：{}", ordersPaymentDTO);
         OrderPaymentVO orderPaymentVO = ordersService.payment(ordersPaymentDTO);
-        log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
     }
 
