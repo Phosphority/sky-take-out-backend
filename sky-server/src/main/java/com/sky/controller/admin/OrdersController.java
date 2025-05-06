@@ -4,13 +4,12 @@ import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrdersService;
+import com.sky.vo.OrderReportVO;
+import com.sky.vo.OrdersSearchVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -30,4 +29,21 @@ public class OrdersController {
         PageResult ordersPageResult = ordersService.conditionSearch(ordersPageQueryDTO);
         return Result.success(ordersPageResult);
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
