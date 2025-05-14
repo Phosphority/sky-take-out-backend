@@ -152,12 +152,17 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public void reminder(Long id) {
-        Orders order = ordersMapper.reminder(id);
+        // 根据id查询order
+        Orders orderDB = ordersMapper.reminder(id);
+
+        if(orderDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("type", 2);
-        map.put("orderId", order.getId());
-        map.put("content", "您有新的订单:" + order.getNumber() + "请及时处理");
+        map.put("orderId", orderDB.getId());
+        map.put("content", "订单号:" + orderDB.getNumber() + "，用户催单请及时处理");
         String json = JSONObject.toJSONString(map);
         webSocketServer.sendToAllClient(json);
     }
