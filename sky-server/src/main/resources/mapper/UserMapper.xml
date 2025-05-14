@@ -7,6 +7,13 @@
         insert into user(openid, create_time)
         VALUES(#{openid}, #{createTime})
     </insert>
+    <select id="countByMap" parameterType="hashmap" resultType="Integer">
+        select count(*) from user
+        <where>
+            <if test="begin != null">and create_time &gt; #{begin}</if>
+            <if test="begin != null">and create_time &lt; #{end}</if>
+        </where>
+    </select>
 </mapper>
 
 

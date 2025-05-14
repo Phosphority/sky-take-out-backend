@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Update;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrdersMapper {
@@ -41,4 +42,8 @@ public interface OrdersMapper {
 
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
+
+    Integer countByMap(Map<String,Object> map);
+
+    Double sumByMap(Map<String, Object> map);
 }

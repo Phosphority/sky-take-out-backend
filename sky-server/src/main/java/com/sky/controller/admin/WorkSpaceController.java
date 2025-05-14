@@ -35,6 +35,8 @@ public class WorkSpaceController {
     @GetMapping("/businessData")
     @ApiOperation("工作台今日数据查询")
     public Result<BusinessDataVO> businessData(){
+
+        // TODO 这里不应该在controller里写数据处理相关的代码，即使是获取时间也不行
         //获得当天的开始时间
         LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
         //获得当天的结束时间

@@ -3,7 +3,6 @@ package com.sky.service.impl;
 import com.sky.constant.StatusConstant;
 import com.sky.entity.Orders;
 import com.sky.mapper.DishMapper;
-import com.sky.mapper.OrderMapper;
 import com.sky.mapper.OrdersMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.UserMapper;
@@ -13,8 +12,9 @@ import com.sky.vo.DishOverViewVO;
 import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.SetmealOverViewVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -24,17 +24,18 @@ import java.util.Map;
 @Slf4j
 public class WorkspaceServiceImpl implements WorkspaceService {
 
-    @Autowired
+    @Resource
     private OrdersMapper orderMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private DishMapper dishMapper;
-    @Autowired
+    @Resource
     private SetmealMapper setmealMapper;
 
     /**
      * 根据时间段统计营业数据
+     *
      * @param begin
      * @param end
      * @return
@@ -47,41 +48,37 @@ public class WorkspaceServiceImpl implements WorkspaceService {
          * 平均客单价：营业额 / 有效订单数
          * 新增用户：当日新增用户的数量
          */
+        Map<String, Object> map = new HashMap<>();
+        map.put("begin", begin);
+        map.put("end", end);
 
-        Map map = new HashMap();
-        map.put("begin",begin);
-        map.put("end",end);
-
-        //查询总订单数
-        Integer totalOrderCount = orderMapper.countByMap(map);
-
+        // 获取当日已完成订单的数量
         map.put("status", Orders.COMPLETED);
-        //营业额
+        Integer completedOrder = orderMapper.countByMap(map);
+        // 当日已经完成订单的总金额
         Double turnover = orderMapper.sumByMap(map);
-        turnover = turnover == null? 0.0 : turnover;
+        // 使用完之后将map中的status删除
+        map.remove("status");
 
-        //有效订单数
-        Integer validOrderCount = orderMapper.countByMap(map);
+        // 获取当日所有订单的数量
+        Integer allOrders = orderMapper.countByMap(map);
 
-        Double unitPrice = 0.0;
-
-        Double orderCompletionRate = 0.0;
-        if(totalOrderCount != 0 && validOrderCount != 0){
-            //订单完成率
-            orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount;
-            //平均客单价
-            unitPrice = turnover / validOrderCount;
+        double orderCompletedRate = 0.0;
+        double unitPrice = 0.0;
+        if (!completedOrder.equals(0) && !allOrders.equals(0)) {
+            // 当日的订单完成率
+            orderCompletedRate = (double) (completedOrder / allOrders);
+            // 当日平均客单价
+            unitPrice = turnover / allOrders;
         }
 
-        //新增用户数
+        // 当日新增用户
         Integer newUsers = userMapper.countByMap(map);
-
         return BusinessDataVO.builder()
-                .turnover(turnover)
-                .validOrderCount(validOrderCount)
-                .orderCompletionRate(orderCompletionRate)
-                .unitPrice(unitPrice)
                 .newUsers(newUsers)
+                .turnover(turnover)
+                .unitPrice(unitPrice)
+                .orderCompletionRate(orderCompletedRate)
                 .build();
     }
 
@@ -92,7 +89,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return
      */
     public OrderOverViewVO getOrderOverView() {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("begin", LocalDateTime.now().with(LocalTime.MIN));
         map.put("status", Orders.TO_BE_CONFIRMED);
 
@@ -130,7 +127,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return
      */
     public DishOverViewVO getDishOverView() {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("status", StatusConstant.ENABLE);
         Integer sold = dishMapper.countByMap(map);
 
@@ -149,7 +146,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return
      */
     public SetmealOverViewVO getSetmealOverView() {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("status", StatusConstant.ENABLE);
         Integer sold = setmealMapper.countByMap(map);
 
