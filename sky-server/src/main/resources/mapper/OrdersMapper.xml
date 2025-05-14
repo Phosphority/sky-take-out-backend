@@ -56,26 +56,30 @@
         </where>
     </select>
 
-    <select id="historyOrders" resultMap="historyOrders">
-        select o.*,od.id order_detail_id,od.name,od.image,od.amount,
-        od.number order_detail_number,od.order_id,od.dish_flavor,od.dish_id
-        from orders o left join order_detail od on o.id = od.order_id
+    <select id="pageQuery" resultType="Orders">
+        select * from orders
         <where>
-            <if test="userId != null">and userId = #{userId}</if>
-            <if test="status != null">and status = #{status}</if>
+            <if test="number != null and number!=''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="phone != null and phone!=''">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
         </where>
+        order by order_time desc
     </select>
-    <resultMap id="historyOrders" type="com.sky.vo.OrdersHistoryVO">
-        <collection property="orderDetailList" column="orderDetailList" ofType="OrderDetail" javaType="list">
-            <id column="order_detail_id" property="id"/>
-            <result column="order_id" property="orderId"/>
-            <result column="dish_flavor" property="dishFlavor"/>
-            <result column="dish_id" property="dishId"/>
-            <result column="name" property="name"/>
-            <result column="image" property="image"/>
-            <result column="amount" property="amount"/>
-        </collection>
-    </resultMap>
 
 
 </mapper>

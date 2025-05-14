@@ -48,5 +48,6 @@ public class ShoppingCart implements Serializable {
     //图片
     private String image;
 
+    // 购物车中的菜品创建时间
     private LocalDateTime createTime;
 }

@@ -7,11 +7,18 @@
         insert into shopping_cart(name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time)
         VALUES(#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor}, #{amount},#{createTime})
     </insert>
+    <insert id="insertBatch" parameterType="ShoppingCart">
+        insert into shopping_cart(name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time)
+        <foreach collection="shoppingCartList" item="cart" separator=",">
+            values(#{cart.name},#{cart.image},#{cart.userId},#{cart.dishId},
+                #{cart.setmealId},#{cart.dishFlavor}, #{cart.amount},#{cart.createTime})
+        </foreach>
+    </insert>
     <delete id="subShoppingCart" parameterType="com.sky.dto.ShoppingCartDTO">
         delete from shopping_cart where user_id = #{userId}
-        <if test="dishId != null"> and dish_id = #{dishId} </if>
-        <if test="dishFlavor != null"> and dish_flavor = #{dishFlavor} </if>
-        <if test="setmealId != null"> and setmeal_id = #{setmealId} </if>
+        <if test="dishId != null">and dish_id = #{dishId}</if>
+        <if test="dishFlavor != null">and dish_flavor = #{dishFlavor}</if>
+        <if test="setmealId != null">and setmeal_id = #{setmealId}</if>
     </delete>
     <select id="list" resultType="ShoppingCart">
         select * from shopping_cart
@@ -28,34 +35,6 @@
         <if test="setmealId != null"> and setmeal_id = #{setmealId} </if>
     </update>
 
-
-<!--    <update id="updateShoppingCart">-->
-<!--        update shopping_cart-->
-<!--        <set>-->
-<!--            <if test="name != null"> name = #{name},</if>-->
-<!--            <if test="image != null"> image = #{image},</if>-->
-<!--            <if test="userId != null"> user_id = #{userId},</if>-->
-<!--            <if test="dishId != null"> dish_id = #{dishId},</if>-->
-<!--            <if test="setmealId != null"> setmeal_id = #{setmealId},</if>-->
-<!--            <if test="dishFlavor != null"> dish_flavor = #{dishFlavor},</if>-->
-<!--            <if test="number != null"> number = #{number},</if>-->
-<!--            <if test="amount != null"> amount = #{amount},</if>-->
-<!--        </set>-->
-<!--        <where>-->
-<!--            user_id = #{userId}-->
-<!--            <if test="setmealId != null"> and setmeal_id = #{setmealId}</if>-->
-<!--            <if test="dishId != null"> and dish_id = #{dishId}</if>-->
-<!--        </where>-->
-<!--    </update>-->
-
-<!--    <select id="findDataById" resultType="com.sky.entity.ShoppingCart">-->
-<!--        select * from shopping_cart-->
-<!--        <where>-->
-<!--            <if test="setmealId != null"> setmeal_id = #{setmealId} </if>-->
-<!--            <if test="dishId != null"> dish_id = #{dishId} </if>-->
-<!--        </where>-->
-<!--        and user_id = #{userId}-->
-<!--    </select>-->
 </mapper>
 
 

@@ -43,4 +43,8 @@ public interface OrdersService {
     OrderStatisticsVO statistics();
 
     OrderVO details(Long id);
+
+    void userCancelById(Long id);
+
+    void repetition(Long id);
 }

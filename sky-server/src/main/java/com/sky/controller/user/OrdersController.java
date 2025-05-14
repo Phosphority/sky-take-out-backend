@@ -8,6 +8,8 @@ import com.sky.result.Result;
 import com.sky.service.OrdersService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
+import com.sky.vo.OrdersSearchVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +35,6 @@ public class OrdersController {
         return Result.success(submitVO);
     }
 
-    /**
-     * 订单支付
-     *
-     * @param ordersPaymentDTO
-     * @return
-     */
     @PutMapping("/payment")
     @ApiOperation("订单支付")
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
@@ -48,13 +44,44 @@ public class OrdersController {
     }
 
     @GetMapping("/historyOrders")
-    @ApiOperation("用户获取历史订单")
-    public Result<PageResult> historyOrders(@RequestBody OrdersPageQueryDTO ordersPageQueryDTO) {
+    @ApiOperation("用户获取历史订单")           // 此处的@ModelAttribute可以不写，因为spring会自动推断并绑定
+    public Result<PageResult> historyOrders(@ModelAttribute OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("用户获取历史订单");
         PageResult ordersList = ordersService.historyOrders(ordersPageQueryDTO);
         return Result.success(ordersList);
     }
 
+    @GetMapping("/orderDetails/{id}")
+    @ApiOperation("查询订单详情")
+    public Result<OrderVO> details(@PathVariable("id") Long id) {
+        OrderVO details = ordersService.details(id);
+        return Result.success(details);
+    }
+
+    /**
+     * 用户取消订单
+     * @param id
+     * @return
+     */
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("取消订单")
+    public Result cancel(@PathVariable("id") Long id) {
+        ordersService.userCancelById(id);
+        return Result.success();
+    }
+
+    @PostMapping("/repetition/{id}")
+    @ApiOperation("再来一单")
+    public Result<OrderVO> repetition(@PathVariable("id") Long id) {
+        ordersService.repetition(id);
+        return Result.success();
+    }
+
+    /**
+     * 用户催单
+     * @param id
+     * @return
+     */
     @GetMapping("/reminder/{id}")
     @ApiOperation("用户催单")
     public Result reminder(@PathVariable Long id) {

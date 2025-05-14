@@ -162,22 +162,6 @@ public class OrdersServiceImpl implements OrdersService {
         webSocketServer.sendToAllClient(json);
     }
 
-    /**
-     * 历史订单分页查询
-     *
-     * @param ordersPageQueryDTO
-     * @return
-     */
-    @Override
-    public PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
-        Orders orders = Orders.builder().build();
-        BeanUtils.copyProperties(ordersPageQueryDTO, orders);
-        orders.setUserId(BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID));
-        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        Page<OrdersHistoryVO> ordersPage = ordersMapper.historyOrders(orders);
-        return new PageResult(ordersPage.getTotal(), ordersPage.getResult());
-    }
-
     @Override
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
         Orders orders = Orders.builder().build();
@@ -201,6 +185,36 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         return new PageResult(ordersList.getTotal(), ordersSearchVOS);
+    }
+
+    /**
+     * 历史订单分页查询
+     *
+     * @param
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult historyOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        // 开启分页查询
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> ordersPage = ordersMapper.pageQuery(ordersPageQueryDTO);
+
+        List<OrderVO> orderVOList = new ArrayList<>();
+        if (ordersPage != null && !ordersPage.isEmpty()) {
+            ordersPage.forEach(order -> {
+                Long orderId = order.getId();
+
+                List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
+                OrderVO orderVO = OrderVO.builder()
+                        .orderDetailList(orderDetails)
+                        .build();
+
+                orderVOList.add(orderVO);
+            });
+        }
+
+        return new PageResult(ordersPage.getTotal(), orderVOList);
     }
 
     @Override
@@ -305,6 +319,57 @@ public class OrdersServiceImpl implements OrdersService {
         return OrderVO.builder()
                 .orderDetailList(orderDetails)
                 .build();
+    }
+
+    @Override
+    public void userCancelById(Long id) {
+        // 根据id查询出Order
+        Orders orderDB = ordersMapper.getById(id);
+
+        // 判断order是否为null
+        if (orderDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        } else if (orderDB.getStatus() > Orders.TO_BE_CONFIRMED) {       // 骑手已经接单不支持用户取消订单
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = Orders.builder().build();
+        // 如果已经支付则退款
+        if (orderDB.getPayStatus().equals(Orders.PAID)) {
+            orders.setPayStatus(Orders.REFUNDED);
+        }
+
+        orders.setStatus(Orders.CANCELLED)
+                .setCancelReason("用户取消")
+                .setId(orderDB.getId())
+                .setCancelTime(LocalDateTime.now());
+        ordersMapper.update(orders);
+    }
+
+    @Override
+    public void repetition(Long id) {
+        // 得到userId
+        Long userId = BaseContext.getCurrentId().get(JwtClaimsConstant.USER_ID);
+
+        // 根据订单id查询出订单详情
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+
+        List<ShoppingCart> shoppingCartList = new ArrayList<>();
+
+        if (orderDetailList != null && !orderDetailList.isEmpty()) {
+            orderDetailList.forEach(orderDetail -> {
+                ShoppingCart shoppingCart = ShoppingCart.builder()
+                        .userId(userId)
+                        .createTime(LocalDateTime.now())
+                        .build();
+
+                BeanUtils.copyProperties(orderDetail, shoppingCartList, "id");  // 第三个参数填的是在copy中忽略的属性
+                shoppingCartList.add(shoppingCart);
+            });
+        }
+
+        // TODO 这里可以将原先的单词插入直接删除，替换成这个批量插入
+        shoppingCartMapping.insertBatch(shoppingCartList);
     }
 
 }
