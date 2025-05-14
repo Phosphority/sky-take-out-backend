@@ -6,10 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersRejectionDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
@@ -23,10 +20,7 @@ import com.sky.service.OrdersService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.*;
 import com.sky.websocket.WebSocketServer;
-import io.swagger.models.auth.In;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -210,10 +204,10 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public void confirm(Long id) {
+    public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = Orders.builder()
-                .status(Orders.TO_BE_CONFIRMED)
-                .id(id)
+                .id(ordersConfirmDTO.getId())
+                .status(Orders.CONFIRMED)
                 .build();
         ordersMapper.update(orders);
     }
@@ -223,12 +217,12 @@ public class OrdersServiceImpl implements OrdersService {
         Orders orderDB = ordersMapper.getById(ordersRejectionDTO.getId());
 
         // 订单不存在或订单状态不为2(待接单状态)才可以拒单
-        if ( orderDB == null || !orderDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+        if (orderDB == null || !orderDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
         Integer payStatus = orderDB.getPayStatus();
-        if(payStatus.equals(Orders.PAID)){
+        if (payStatus.equals(Orders.PAID)) {
             // 拒单需要退款，还需要更新订单的信息
             Orders orders = Orders.builder()
                     .payStatus(Orders.REFUND)
@@ -244,17 +238,26 @@ public class OrdersServiceImpl implements OrdersService {
 
 
     @Override
-    public void cancel(Long id, String cancelReason) {
+    public void cancel(OrdersCancelDTO ordersCancelDTO) {
         Orders orders = Orders.builder()
                 .status(Orders.CANCELLED)
-                .cancelReason(cancelReason)
-                .id(id)
+                .cancelReason(ordersCancelDTO.getCancelReason())
+                .id(ordersCancelDTO.getId())
                 .build();
         ordersMapper.update(orders);
     }
 
     @Override
     public void delivery(Long id) {
+        // 根据id查询订单
+        Orders orderDB = ordersMapper.getById(id);
+
+        // 判断订单是否存在，以及判断订单是否是3(已接单)的状态,如果不是已接单的状态就抛出状态异常
+        if (orderDB == null || !orderDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        // 之后再开始修改订单
         Orders orders = Orders.builder()
                 .status(Orders.DELIVERY_IN_PROGRESS)
                 .estimatedDeliveryTime(LocalDateTime.now().plusMinutes(50))
@@ -265,6 +268,14 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public void complete(Long id) {
+        // 根据id查询order
+        Orders orderDB = ordersMapper.getById(id);
+
+        // 判断是否存在以及是否为4(派送中)
+        if (orderDB == null || !orderDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
         Orders orders = Orders.builder()
                 .status(Orders.COMPLETED)
                 .deliveryTime(LocalDateTime.now())

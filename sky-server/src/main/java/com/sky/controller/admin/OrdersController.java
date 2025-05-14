@@ -1,5 +1,7 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersRejectionDTO;
 import com.sky.result.PageResult;
@@ -47,6 +49,13 @@ public class OrdersController {
         return Result.success(orderVO);
     }
 
+    @PutMapping("/confirm")
+    @ApiOperation("接单")
+    public Result confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
+        orderService.confirm(ordersConfirmDTO);
+        return Result.success();
+    }
+
     @PutMapping("rejection")
     @ApiOperation("拒单")
     public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) {
@@ -54,30 +63,23 @@ public class OrdersController {
         return Result.success();
     }
 
-    @PutMapping("confirm")
-    @ApiOperation("接单")
-    public Result confirm(@RequestBody Integer id) {
-        orderService.confirm(Long.valueOf(id));
-        return Result.success();
-    }
-
-    @PutMapping("cancel")
+    @PutMapping("/cancel")
     @ApiOperation("取消订单")
-    public Result cancel(@RequestParam Long id, @RequestParam String cancelReason) {
-        orderService.cancel(id, cancelReason);
+    public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO) {
+        orderService.cancel(ordersCancelDTO);
         return Result.success();
     }
 
     @PutMapping("/delivery/{id}")
     @ApiOperation("派送订单")
-    public Result delivery(@PathVariable Long id) {
+    public Result delivery(@PathVariable("id") Long id) {
         orderService.delivery(id);
         return Result.success();
     }
 
     @PutMapping("/complete/{id}")
     @ApiOperation("完成订单")
-    public Result complete(@PathVariable Long id) {
+    public Result complete(@PathVariable("id") Long id) {
         orderService.complete(id);
         return Result.success();
     }
