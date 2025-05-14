@@ -9,6 +9,7 @@ import com.sky.vo.OrderReportVO;
 import com.sky.vo.OrdersSearchVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,15 +34,15 @@ public class OrdersController {
 
     @PutMapping("confirm")
     @ApiOperation("接单")
-    public Result confirm(@RequestParam Long id) {
-        ordersService.confirm(id);
+    public Result confirm(@RequestBody Integer id) {
+        ordersService.confirm(Long.valueOf(id));
         return Result.success();
     }
 
     @PutMapping("rejection")
     @ApiOperation("拒单")
-    public Result rejection(@RequestParam Long id,@RequestParam String rejectionReason) {
-        ordersService.rejection(id,rejectionReason);
+    public Result rejection(@RequestParam Integer id,@RequestParam String rejectionReason) {
+        ordersService.rejection(Long.valueOf(id),rejectionReason);
         return Result.success();
     }
 

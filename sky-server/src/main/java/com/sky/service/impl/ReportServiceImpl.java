@@ -41,6 +41,7 @@ public class ReportServiceImpl implements ReportService {
             map.put("end", endTime);
             map.put("status", Orders.COMPLETED);
             Double total = reportMapper.sumByMap(map);
+            total = total == null ? 0 : total;
             totalList.add(total);
         }
 
