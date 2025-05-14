@@ -1,7 +1,5 @@
 package com.sky.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -10,6 +8,7 @@ import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
@@ -21,12 +20,13 @@ import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrdersService;
-import com.sky.utils.HttpClientUtil;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.*;
 import com.sky.websocket.WebSocketServer;
+import io.swagger.models.auth.In;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -219,14 +219,29 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public void rejection(Long id, String rejectionReason) {
-        Orders orders = Orders.builder()
-                .status(Orders.CANCELLED)
-                .rejectionReason(rejectionReason)
-                .id(id)
-                .build();
-        ordersMapper.update(orders);
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders orderDB = ordersMapper.getById(ordersRejectionDTO.getId());
+
+        // 订单不存在或订单状态不为2(待接单状态)才可以拒单
+        if ( orderDB == null || !orderDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Integer payStatus = orderDB.getPayStatus();
+        if(payStatus.equals(Orders.PAID)){
+            // 拒单需要退款，还需要更新订单的信息
+            Orders orders = Orders.builder()
+                    .payStatus(Orders.REFUND)
+                    .status(Orders.REFUNDED)
+                    .rejectionReason(ordersRejectionDTO.getRejectionReason())
+                    .cancelTime(LocalDateTime.now())
+                    .id(ordersRejectionDTO.getId())
+                    .build();
+
+            ordersMapper.update(orders);
+        }
     }
+
 
     @Override
     public void cancel(Long id, String cancelReason) {
@@ -256,6 +271,29 @@ public class OrdersServiceImpl implements OrdersService {
                 .id(id)
                 .build();
         ordersMapper.update(orders);
+    }
+
+    @Override
+    public OrderStatisticsVO statistics() {
+        Integer toBeConfirmed = ordersMapper.countStatus(Orders.TO_BE_CONFIRMED);
+        Integer confirmed = ordersMapper.countStatus(Orders.CONFIRMED);
+        Integer deliveryInProgress = ordersMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
+
+        return OrderStatisticsVO.builder()
+                .toBeConfirmed(toBeConfirmed)
+                .confirmed(confirmed)
+                .deliveryInProgress(deliveryInProgress)
+                .build();
+    }
+
+    @Override
+    public OrderVO details(Long id) {
+        Orders orders = ordersMapper.getById(id);
+
+        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
+        return OrderVO.builder()
+                .orderDetailList(orderDetails)
+                .build();
     }
 
 }

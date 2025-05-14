@@ -1,16 +1,16 @@
 package com.sky.controller.admin;
 
-import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrdersService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.OrdersSearchVO;
+import com.sky.vo.OrderStatisticsVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,48 +22,63 @@ import javax.annotation.Resource;
 public class OrdersController {
 
     @Resource
-    private OrdersService ordersService;
+    private OrdersService orderService;
+
 
     @GetMapping("/conditionSearch")
     @ApiOperation("订单搜索")
     public Result<PageResult> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("订单搜索:{}", ordersPageQueryDTO);
-        PageResult ordersPageResult = ordersService.conditionSearch(ordersPageQueryDTO);
+        PageResult ordersPageResult = orderService.conditionSearch(ordersPageQueryDTO);
         return Result.success(ordersPageResult);
+    }
+
+    @GetMapping("/statistics")
+    @ApiOperation("各个状态的订单的数量统计")
+    public Result<OrderStatisticsVO> statistics() {
+        OrderStatisticsVO orderStatisticsVO = orderService.statistics();
+        return Result.success(orderStatisticsVO);
+    }
+
+    @GetMapping("/details/{id}")
+    @ApiOperation("查看订单详详情")
+    public Result<OrderVO> details(@PathVariable Long id) {
+        OrderVO orderVO = orderService.details(id);
+        return Result.success(orderVO);
+    }
+
+    @PutMapping("rejection")
+    @ApiOperation("拒单")
+    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) {
+        orderService.rejection(ordersRejectionDTO);
+        return Result.success();
     }
 
     @PutMapping("confirm")
     @ApiOperation("接单")
     public Result confirm(@RequestBody Integer id) {
-        ordersService.confirm(Long.valueOf(id));
-        return Result.success();
-    }
-
-    @PutMapping("rejection")
-    @ApiOperation("拒单")
-    public Result rejection(@RequestParam Integer id,@RequestParam String rejectionReason) {
-        ordersService.rejection(Long.valueOf(id),rejectionReason);
+        orderService.confirm(Long.valueOf(id));
         return Result.success();
     }
 
     @PutMapping("cancel")
     @ApiOperation("取消订单")
-    public Result cancel(@RequestParam Long id,@RequestParam String cancelReason) {
-        ordersService.cancel(id,cancelReason);
+    public Result cancel(@RequestParam Long id, @RequestParam String cancelReason) {
+        orderService.cancel(id, cancelReason);
         return Result.success();
     }
 
     @PutMapping("/delivery/{id}")
     @ApiOperation("派送订单")
     public Result delivery(@PathVariable Long id) {
-        ordersService.delivery(id);
+        orderService.delivery(id);
         return Result.success();
     }
 
     @PutMapping("/complete/{id}")
     @ApiOperation("完成订单")
     public Result complete(@PathVariable Long id) {
-        ordersService.complete(id);
+        orderService.complete(id);
         return Result.success();
     }
 
