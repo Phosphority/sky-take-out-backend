@@ -18,7 +18,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Api
+// 前端是使用eChart实现的
+@Api(tags = "数据统计相关接口")
 @RestController
 @Slf4j
 @RequestMapping("/admin/report")
