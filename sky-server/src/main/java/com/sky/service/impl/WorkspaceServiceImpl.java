@@ -89,28 +89,26 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return
      */
     public OrderOverViewVO getOrderOverView() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("begin", LocalDateTime.now().with(LocalTime.MIN));
-        map.put("status", Orders.TO_BE_CONFIRMED);
+        Map<String,Object> map = new HashMap<>();
 
-        //待接单
-        Integer waitingOrders = orderMapper.countByMap(map);
+        // 查询所有订单
+        Integer allOrders = orderMapper.countByMap(map);
 
-        //待派送
-        map.put("status", Orders.CONFIRMED);
-        Integer deliveredOrders = orderMapper.countByMap(map);
-
-        //已完成
+        // 查询已完成订单
         map.put("status", Orders.COMPLETED);
         Integer completedOrders = orderMapper.countByMap(map);
 
-        //已取消
+        // 查询已取消订单
         map.put("status", Orders.CANCELLED);
         Integer cancelledOrders = orderMapper.countByMap(map);
 
-        //全部订单
-        map.put("status", null);
-        Integer allOrders = orderMapper.countByMap(map);
+        // 查询待派送订单
+        map.put("status", Orders.CONFIRMED);
+        Integer deliveredOrders = orderMapper.countByMap(map);
+
+        // 查询待接单订单
+        map.put("status", Orders.TO_BE_CONFIRMED);
+        Integer waitingOrders = orderMapper.countByMap(map);
 
         return OrderOverViewVO.builder()
                 .waitingOrders(waitingOrders)
@@ -128,9 +126,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      */
     public DishOverViewVO getDishOverView() {
         Map<String, Object> map = new HashMap<>();
+        // 启用菜品数量
         map.put("status", StatusConstant.ENABLE);
         Integer sold = dishMapper.countByMap(map);
 
+        // 未启用菜品数量
         map.put("status", StatusConstant.DISABLE);
         Integer discontinued = dishMapper.countByMap(map);
 

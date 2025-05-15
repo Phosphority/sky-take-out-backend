@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DishMapper {
@@ -36,4 +37,6 @@ public interface DishMapper {
     void updateStatus(Dish dish);
 
     List<DishVO> findByCategoryId(@Param("categoryId") Long categoryId,@Param("status") Integer status);
+
+    Integer countByMap(Map<String, Object> map);
 }

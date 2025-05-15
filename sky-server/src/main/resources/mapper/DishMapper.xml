@@ -75,6 +75,10 @@
         </set>
         where id  = #{id}
     </update>
+
+    <select id="countByMap" parameterType="hashmap" resultType="Integer">
+        select count(*) from dish where status = #{status}
+    </select>
 </mapper>
 
 

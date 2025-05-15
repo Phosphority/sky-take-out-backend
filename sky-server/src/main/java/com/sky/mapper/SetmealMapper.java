@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
@@ -44,6 +45,9 @@ public interface SetmealMapper {
     void updateSetmealStatus(Setmeal setmeal);
 
     List<Setmeal> findByCategoryId(@Param("categoryId") Long categoryId,@Param("status") Integer status);
+
+    @Select("select count(*) from setmeal where status = #{status}")
+    Integer countByMap(Map<String, Object> map);
 }
 
 
