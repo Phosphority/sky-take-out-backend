@@ -4,6 +4,7 @@ import com.sky.result.Result;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,20 @@ public class ReportController {
             @DateTimeFormat(pattern = "yyyy-MM-dd")
             LocalDate end
     ) {
-        return Result.success(reportService.ordersStatistics(begin,end));
+        return Result.success(reportService.ordersStatistics(begin, end));
+    }
+
+    @GetMapping("/userStatistics")
+    @ApiOperation("用户统计接口")
+    public Result<UserReportVO> userStatistics(
+            @RequestParam("begin")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            LocalDate begin,
+            @RequestParam("end")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            LocalDate end
+    ) {
+        return Result.success(reportService.userStatistics(begin,end));
     }
 
 }

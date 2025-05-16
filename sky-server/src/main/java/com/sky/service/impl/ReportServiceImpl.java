@@ -3,9 +3,11 @@ package com.sky.service.impl;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrdersMapper;
 import com.sky.mapper.ReportMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +26,10 @@ public class ReportServiceImpl implements ReportService {
 
     @Resource
     private ReportMapper reportMapper;
-    @Autowired
+    @Resource
     private OrdersMapper ordersMapper;
+    @Resource
+    private UserMapper userMapper;
 
 
     @Override
@@ -75,18 +79,18 @@ public class ReportServiceImpl implements ReportService {
         map.put("begin", begin.toString());
         map.put("end", end.toString());
 
-        // 每日的订单数列表
-        List<Integer> orderCountList = new ArrayList<>();
-        // 每日有效订单数列表
-        List<Integer> validOrderCountList = new ArrayList<>();
-
-        // 得到日期列表
+        // 得到日期列表 TODO这里可以优化，将获取日期列表的代码提取出来
         List<LocalDate> dateList = new ArrayList<>();
         dateList.add(begin);
         while (!(begin.equals(end))) {
             begin = begin.plusDays(1);
             dateList.add(begin);
         }
+
+        // 每日的订单数列表
+        List<Integer> orderCountList = new ArrayList<>();
+        // 每日有效订单数列表
+        List<Integer> validOrderCountList = new ArrayList<>();
 
         // 得到订单的每日数据
         for (LocalDate date : dateList) {
@@ -104,8 +108,8 @@ public class ReportServiceImpl implements ReportService {
             // 每日有效订单数
             map.put("status", Orders.COMPLETED);
             Integer validOrderCount = ordersMapper.countByMap(map);
-            validOrderCountList.add(validOrderCount);
             map.remove("status");
+            validOrderCountList.add(validOrderCount);
         }
         // 订单总数
         Integer totalOrderCount = orderCountList.stream().reduce(0, Integer::sum);
@@ -130,6 +134,49 @@ public class ReportServiceImpl implements ReportService {
                 .orderCompletionRate(orderCompletionRate)
                 .build();
     }
+
+    @Override
+    public UserReportVO userStatistics(LocalDate begin, LocalDate end) {
+        // 得到日期列表
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(begin);
+        while (!(begin.equals(end))) {
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        // 新增用户数列表
+        List<Integer> newUserList = new ArrayList<>();
+        // 总量用户数列表
+        List<Integer> totalUserList = new ArrayList<>();
+        // 当前用户总数
+        Integer totalUser = userMapper.countByMap(map);
+        for(LocalDate date : dateList) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            map.put("begin", beginTime);
+            map.put("end", endTime);
+
+            // 每日新增用户数
+            Integer newUsers = userMapper.countByMap(map);
+
+            newUserList.add(newUsers);
+            // 每日新增之后的用户总数
+            totalUser = totalUser + newUsers;
+            totalUserList.add(totalUser);
+        }
+
+        String dateListStr = StringUtils.join(dateList, ",");
+        String newUserListStr = StringUtils.join(newUserList, ",");
+        String totalUserListStr = StringUtils.join(totalUserList, ",");
+        return UserReportVO.builder()
+                .dateList(dateListStr)
+                .newUserList(newUserListStr)
+                .totalUserList(totalUserListStr)
+                .build();
+    }
+
 }
 
 
