@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 // 前端是使用eChart实现的
 @Api(tags = "数据统计相关接口")
@@ -39,10 +37,22 @@ public class ReportController {
             @DateTimeFormat(pattern = "yyyy-MM-dd")
             LocalDate end
     ) {
-        TurnoverReportVO turnoverStatistics = reportService.turnoverStatistics(begin,end);
+        TurnoverReportVO turnoverStatistics = reportService.turnoverStatistics(begin, end);
         return Result.success(turnoverStatistics);
     }
 
+    @GetMapping("/ordersStatistics")
+    @ApiOperation("订单统计接口")
+    public Result<OrderReportVO> ordersStatistics(
+            @RequestParam("begin")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            LocalDate begin,
+            @RequestParam("end")
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            LocalDate end
+    ) {
+        return Result.success(reportService.ordersStatistics(begin,end));
+    }
 
 }
 
