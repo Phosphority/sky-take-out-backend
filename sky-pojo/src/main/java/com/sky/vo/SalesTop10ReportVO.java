@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
@@ -12,6 +13,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SalesTop10ReportVO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     //商品名称列表，以逗号分隔，例如：鱼香肉丝,宫保鸡丁,水煮鱼
     private String nameList;

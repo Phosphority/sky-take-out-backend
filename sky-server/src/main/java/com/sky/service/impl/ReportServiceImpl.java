@@ -1,15 +1,16 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrdersMapper;
 import com.sky.mapper.ReportMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -152,7 +153,7 @@ public class ReportServiceImpl implements ReportService {
         List<Integer> totalUserList = new ArrayList<>();
         // 当前用户总数
         Integer totalUser = userMapper.countByMap(map);
-        for(LocalDate date : dateList) {
+        for (LocalDate date : dateList) {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
             map.put("begin", beginTime);
@@ -176,6 +177,35 @@ public class ReportServiceImpl implements ReportService {
                 .totalUserList(totalUserListStr)
                 .build();
     }
+
+    @Override
+    public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        Map<String, Object> map = new HashMap<>();
+        map.put("begin", beginTime);
+        map.put("end", endTime);
+
+        List<GoodsSalesDTO> goodsSalesDTOList = ordersMapper.getSalesTop10(map);
+        // 商品名称列表
+        List<String> nameList = new ArrayList<>();
+        // 商品销量列表
+        List<Integer> numberList = new ArrayList<>();
+//        List<String> nameList = goodsSalesDTOList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+//        List<Integer> numberList = goodsSalesDTOList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        for (GoodsSalesDTO goodsSalesDTO : goodsSalesDTOList) {
+            nameList.add(goodsSalesDTO.getName());
+            numberList.add(goodsSalesDTO.getNumber());
+        }
+
+        String nameListStr = StringUtils.join(nameList, ",");
+        String numberListStr = StringUtils.join(numberList, ",");
+        return SalesTop10ReportVO.builder()
+                .nameList(nameListStr)
+                .numberList(numberListStr)
+                .build();
+    }
+
 
 }
 
