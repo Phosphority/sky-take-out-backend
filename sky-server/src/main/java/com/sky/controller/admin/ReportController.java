@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 // 前端是使用eChart实现的
@@ -80,6 +81,12 @@ public class ReportController {
             LocalDate end
     ) {
         return Result.success(reportService.top10(begin,end));
+    }
+
+    @GetMapping("export")
+    @ApiOperation("到处Excel报表接口")
+    public void export(HttpServletResponse response){
+        reportService.export(response);
     }
 }
 
