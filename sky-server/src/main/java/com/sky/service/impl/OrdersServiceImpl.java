@@ -213,10 +213,8 @@ public class OrdersServiceImpl implements OrdersService {
                 Long orderId = order.getId();
 
                 List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
-                OrderVO orderVO = OrderVO.builder()
-                        .orderDetailList(orderDetails)
-                        .build();
-
+                OrderVO orderVO = new OrderVO();
+                orderVO.setOrderDetailList(orderDetails);
                 orderVOList.add(orderVO);
             });
         }
@@ -274,7 +272,7 @@ public class OrdersServiceImpl implements OrdersService {
         Orders orderDB = ordersMapper.getById(id);
 
         // 判断订单是否存在，以及判断订单是否是3(已接单)的状态,如果不是已接单的状态就抛出状态异常
-        if (orderDB == null || !orderDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+        if (orderDB == null || !orderDB.getStatus().equals(Orders.CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
@@ -323,9 +321,9 @@ public class OrdersServiceImpl implements OrdersService {
         Orders orders = ordersMapper.getById(id);
 
         List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
-        return OrderVO.builder()
-                .orderDetailList(orderDetails)
-                .build();
+        OrderVO orderVO = new OrderVO();
+        orderVO.setOrderDetailList(orderDetails);
+        return  orderVO;
     }
 
     @Override

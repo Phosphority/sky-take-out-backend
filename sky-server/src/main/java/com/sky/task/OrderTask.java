@@ -18,7 +18,7 @@ public class OrderTask {
     @Resource
     OrdersMapper ordersMapper;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 15 * * * *")
     public void cancelPastPaymentOrder () {
         log.info("定时任务超过15分钟的订单自动取消");
         LocalDateTime now = LocalDateTime.now();

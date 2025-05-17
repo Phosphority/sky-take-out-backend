@@ -59,17 +59,16 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         Double turnover = orderMapper.sumByMap(map);
         // 使用完之后将map中的status删除
         map.remove("status");
-
-        // 获取当日所有订单的数量
+        // 获取当日所有状态订单的数量
         Integer allOrders = orderMapper.countByMap(map);
 
         double orderCompletedRate = 0.0;
         double unitPrice = 0.0;
         if (!completedOrder.equals(0) && !allOrders.equals(0)) {
             // 当日的订单完成率
-            orderCompletedRate = (double) (completedOrder / allOrders);
-            // 当日平均客单价
-            unitPrice = turnover / allOrders;
+            orderCompletedRate =  completedOrder / (double)allOrders;
+            // 当日已完成的订单的平均客单价
+            unitPrice = turnover / completedOrder;
         }
 
         // 当日新增用户
