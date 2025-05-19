@@ -2,11 +2,14 @@ package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sky.constant.WeChatLoginConstant;
 import com.sky.dto.UserLoginDTO;
+import com.sky.entity.AddressBook;
 import com.sky.entity.User;
 import com.sky.exception.BaseException;
 import com.sky.exception.RequestException;
+import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.UserService;
@@ -22,7 +25,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     // 用户登录通用请求接口
     private static final String USER_GET_OPENID = "https://api.weixin.qq.com/sns/jscode2session";

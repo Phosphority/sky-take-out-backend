@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 @Service
 @Transactional
-public class OrdersServiceImpl implements OrdersService {
+public class OrdersServiceImpl extends ServiceImpl<OrdersMapper,Orders> implements OrdersService {
 
     @Resource
     private OrdersMapper ordersMapper;
