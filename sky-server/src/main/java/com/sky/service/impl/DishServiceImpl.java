@@ -14,10 +14,12 @@ import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,6 +150,16 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishVO> findByCategoryId(long categoryId) {
+        // NOTICE 使用redis将数据缓存到内存中
+        // 判断缓存中是否有该分类id的数据
+        ListOperations<String,DishVO> listOperations = redisTemplate.opsForList();
+        List<DishVO> list = listOperations.range("dish_" + categoryId, 0, -1);
+        if(list != null && !list.isEmpty()) {
+            // 如果list不为null说明缓存中有数据，直接返回
+            log.info("从redis中获取到了数据");
+            return list;
+        }
+        // 如果没有缓存的话就从数据库中查询
         Set<String> keySet = BaseContext.getCurrentId().keySet();
         String valueName = null;
         for (String key : keySet) {
@@ -155,7 +167,10 @@ public class DishServiceImpl implements DishService {
         }
         if (valueName != null && valueName.equals(JwtClaimsConstant.USER_ID)) {
             // 如果是用户，则只查询在售状态的菜品
-            return dishMapper.findByCategoryId(categoryId, 1);
+            // 将数据库中查询到的数据存入缓存
+            List<DishVO> dishVOS = dishMapper.findByCategoryId(categoryId, 1);
+            listOperations.leftPushAll("dish_" + categoryId, dishVOS);
+            return dishVOS;
         } else {
             // 如果是管理员，则status为null查询所有的菜品
             return dishMapper.findByCategoryId(categoryId, null);
