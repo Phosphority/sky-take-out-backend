@@ -12,6 +12,18 @@ spring:
       url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+#      test-on-borrow: true
+#      test-on-return: false
+#      test-while-idle: true
+#      time-between-eviction-runs-millis: 60000
+#      min-evictable-idle-time-millis: 25200000
+#      validation-query: SELECT 1 FROM DUAL
+#      filters: stat,wall,log4j
+#      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+#      use-global-data-source-stat: true
   redis:
     host: ${sky.redis.host}
     port: ${sky.redis.port}
@@ -22,7 +34,7 @@ spring:
       max-file-size: 20MB #设置springBoot上传到服务器的单个文件的最大大小
       max-request-size: 40MB #设置springBoot上传到服务器的请求的总大小
 
-mybatis:
+mybatis-plus:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.sky.entity

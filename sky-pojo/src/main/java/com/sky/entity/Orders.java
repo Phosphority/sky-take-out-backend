@@ -1,5 +1,9 @@
 package com.sky.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +18,8 @@ import java.time.LocalDateTime;
 /**
  * 订单
  */
+// 标识该实体类对应数据库中的表名为 orders
+@TableName("orders")
 @Data
 @Builder
 @NoArgsConstructor
@@ -42,74 +48,99 @@ public class Orders implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    // 标识该字段为主键，且使用数据库自增策略
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    //订单号
+    // 订单号
+    @TableField("number")
     private String number;
 
-    //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消 7退款
+    // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消 7退款
+    @TableField("status")
     private Integer status;
 
-    //下单用户id
+    // 下单用户id
+    @TableField("user_id")
     private Long userId;
 
-    //地址id
+    // 地址id
+    @TableField("address_book_id")
     private Long addressBookId;
 
-    //下单时间
+    // 下单时间
+    @TableField("order_time")
     private LocalDateTime orderTime;
 
-    //结账时间
+    // 结账时间
+    @TableField("checkout_time")
     private LocalDateTime checkoutTime;
 
-    //支付方式 1微信，2支付宝
+    // 支付方式 1微信，2支付宝
+    @TableField("pay_method")
     private Integer payMethod;
 
-    //支付状态 0未支付 1已支付 2退款
+    // 支付状态 0未支付 1已支付 2退款
+    @TableField("pay_status")
     private Integer payStatus;
 
-    //实收金额
+    // 实收金额
+    @TableField("amount")
     private BigDecimal amount;
 
-    //备注
+    // 备注
+    @TableField("remark")
     private String remark;
 
-    //用户名
+    // 用户名
+    @TableField("user_name")
     private String userName;
 
-    //手机号
+    // 手机号
+    @TableField("phone")
     private String phone;
 
-    //地址
+    // 地址
+    @TableField("address")
     private String address;
 
-    //收货人
+    // 收货人
+    @TableField("consignee")
     private String consignee;
 
-    //订单取消原因
+    // 订单取消原因
+    @TableField("cancel_reason")
     private String cancelReason;
 
-    //订单拒绝原因
+    // 订单拒绝原因
+    @TableField("rejection_reason")
     private String rejectionReason;
 
-    //订单取消时间
+    // 订单取消时间
+    @TableField("cancel_time")
     private LocalDateTime cancelTime;
 
-    //预计送达时间
+    // 预计送达时间
+    @TableField("estimated_delivery_time")
     private LocalDateTime estimatedDeliveryTime;
 
-    //配送状态  1立即送出  0选择具体时间
+    // 配送状态  1立即送出  0选择具体时间
+    @TableField("delivery_status")
     private Integer deliveryStatus;
 
-    //送达时间
+    // 送达时间
+    @TableField("delivery_time")
     private LocalDateTime deliveryTime;
 
-    //打包费
+    // 打包费
+    @TableField("pack_amount")
     private int packAmount;
 
-    //餐具数量
+    // 餐具数量
+    @TableField("tableware_number")
     private int tablewareNumber;
 
-    //餐具数量状态  1按餐量提供  0选择具体数量
+    // 餐具数量状态  1按餐量提供  0选择具体数量
+    @TableField("tableware_status")
     private Integer tablewareStatus;
 }
