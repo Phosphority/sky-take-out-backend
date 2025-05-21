@@ -35,14 +35,19 @@ public class UserController {
     public Result<UserLoginVO> wxLogin(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("用户一次性授权码{}", userLoginDTO);
         UserLoginVO userLoginVO = userService.wxLogin(userLoginDTO);
+        // 生成jwt令牌并且返回userLoginVO
+        UserLoginVO loginVO = getToken(userLoginVO);
+        // 返回userLoginVO
+        return Result.success(loginVO);
+    }
 
+    public UserLoginVO getToken(UserLoginVO userLoginVO) {
         Map<String,Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID,userLoginVO.getId());
         // 生成jwtToken令牌
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
         userLoginVO.setToken(token);
-        // 返回userLoginVO
-        return Result.success(userLoginVO);
+        return userLoginVO;
     }
 }
 

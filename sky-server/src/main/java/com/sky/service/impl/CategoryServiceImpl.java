@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
@@ -16,18 +17,16 @@ import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 @Slf4j
 @Service
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
     @Resource
     private CategoryMapper categoryMapper;
     @Resource
@@ -78,27 +77,27 @@ public class CategoryServiceImpl implements CategoryService {
             return categoryMapper.findListByType(type, 1);
         } else {
             // 如果是管理员，则status为null查询所有的菜品
-            return categoryMapper.findListByType(type,null);
+            return categoryMapper.findListByType(type, null);
         }
     }
 
     @Override
     public PageResult page(CategoryPageQueryDTO categoryPageQueryDTO) {
-        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
-        Page<Category> categoryPage = categoryMapper.page(categoryPageQueryDTO.getName(),categoryPageQueryDTO.getType());
-        return new PageResult(categoryPage.getTotal(),categoryPage.getResult());
+        PageHelper.startPage(categoryPageQueryDTO.getPage(), categoryPageQueryDTO.getPageSize());
+        Page<Category> categoryPage = categoryMapper.page(categoryPageQueryDTO.getName(), categoryPageQueryDTO.getType());
+        return new PageResult(categoryPage.getTotal(), categoryPage.getResult());
     }
 
     @Override
     @Transactional
     public boolean delete(long id) {
         int count = dishMapper.findDishMapperByCategoryId(id);
-        if( count > 0){
+        if (count > 0) {
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
         }
 
         count = setmealMapper.countByCategoryId(id);
-        if( count <= 0){
+        if (count <= 0) {
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
         }
 

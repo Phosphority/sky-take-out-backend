@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.context.BaseContext;
 import com.sky.entity.AddressBook;
@@ -11,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class AddressBookServiceImpl implements AddressBookService {
+public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper,AddressBook> implements AddressBookService {
 
     @Resource
     private AddressBookMapper addressBookMapper;

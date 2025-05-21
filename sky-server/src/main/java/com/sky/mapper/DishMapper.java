@@ -1,7 +1,9 @@
 package com.sky.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
+import com.sky.entity.Category;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface DishMapper {
+public interface DishMapper extends BaseMapper<Dish> {
     @Select("select count(*) from dish where category_id = #{CategoryId}")
     Integer findDishMapperByCategoryId(long CategoryId);
 

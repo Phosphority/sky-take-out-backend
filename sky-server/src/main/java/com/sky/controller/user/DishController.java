@@ -27,18 +27,8 @@ public class DishController {
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
     public Result<List<DishVO>> list(@RequestParam long categoryId) {
-        // NOTICE 使用redis将数据缓存到内存中
-        // 判断缓存中是否有该分类id的数据
-        ListOperations<String,DishVO> listOperations = redisTemplate.opsForList();
-        List<DishVO> list = listOperations.range("dish_" + categoryId, 0, -1);
-        if(list != null && !list.isEmpty()) {
-            return Result.success(list);
-        }
-        // 如果没有缓存的话就从数据库中查询
         log.info("查询分类id为:{}", categoryId);
-        list = dishService.findByCategoryId(categoryId);
-        // 将数据库中查询到的数据存入缓存
-        listOperations.leftPushAll("dish_" + categoryId, list);
+        List<DishVO> list = dishService.findByCategoryId(categoryId);
         return Result.success(list);
     }
 }

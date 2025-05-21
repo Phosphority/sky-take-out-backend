@@ -46,26 +46,12 @@ public class EmployeeController {
     @ApiOperation("登录")
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
+        // TODO 登录校验，这里不应该写这么多业务逻辑，应该将这些业务逻辑全部交给service层处理
         log.info("员工登录：{}", employeeLoginDTO);
 
         Employee employee = employeeService.login(employeeLoginDTO);
-
-        //登录成功后，生成jwt令牌
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
-                claims
-        );
-
-        EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
-                .id(employee.getId())
-                .userName(employee.getUsername())
-                .name(employee.getName())
-                .token(token)
-                .build();
-
+        // 调用方法getToken，生成jwt令牌的同时返回employeeLoginVO
+        EmployeeLoginVO employeeLoginVO = getToken(employee);
         return Result.success(employeeLoginVO);
     }
 
@@ -130,6 +116,24 @@ public class EmployeeController {
             employeeService.editPassword(passwordEditDTO.getNewPassword(), passwordEditDTO.getEmpId());
         }
         return Result.success();
+    }
+
+    public EmployeeLoginVO getToken(Employee employee) {
+
+        // 登录成功后，生成jwt令牌
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
+        String token = JwtUtil.createJWT(
+                jwtProperties.getAdminSecretKey(),
+                jwtProperties.getAdminTtl(),
+                claims
+        );
+        return EmployeeLoginVO.builder()
+                .id(employee.getId())
+                .userName(employee.getUsername())
+                .name(employee.getName())
+                .token(token)
+                .build();
     }
 
 }

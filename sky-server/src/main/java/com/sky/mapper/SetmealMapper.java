@@ -1,7 +1,9 @@
 package com.sky.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
+import com.sky.entity.Category;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 
 @Mapper
-public interface SetmealMapper {
+public interface SetmealMapper extends BaseMapper<Setmeal> {
     @Select("select count(*) from setmeal where category_id = #{CategoryId}")
     Integer countByCategoryId(long CategoryId);
 

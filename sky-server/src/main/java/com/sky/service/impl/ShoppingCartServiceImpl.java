@@ -1,9 +1,12 @@
 package com.sky.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.ShoppingCartDTO;
+import com.sky.entity.AddressBook;
 import com.sky.entity.ShoppingCart;
+import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapping;
@@ -23,7 +26,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ShoppingCartServiceImpl implements ShoppingCartService {
+public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapping, ShoppingCart> implements ShoppingCartService {
 
     @Resource
     private ShoppingCartMapping shoppingCartMapping;
